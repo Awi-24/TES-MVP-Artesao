@@ -9,7 +9,7 @@ export class ArtesaoUseCase {
 		if (existente) throw new Error("Email já cadastrado");
 
 		const novo = new Artesao(
-		Date.now(),
+		"",
 		input.nome,
 		input.email,
 		input.telefone,
@@ -25,15 +25,15 @@ export class ArtesaoUseCase {
 		await this.artesaoRepo.criar(novo);
 	}
 
-	async buscarPorId(id: number): Promise<Artesao | null> {
+	async buscarPorId(id: string): Promise<Artesao | null> {
 		return this.artesaoRepo.buscarPorId(id);
 	}
 
-	async atualizar(id: number, dados: Partial<Artesao>): Promise<void> {
+	async atualizar(id: string, dados: Partial<Artesao>): Promise<void> {
 		await this.artesaoRepo.atualizar(id, dados);
 	}
 
-	async deletar(id: number): Promise<void> {
+	async deletar(id: string): Promise<void> {
 		await this.artesaoRepo.deletar(id);
 	}
 }

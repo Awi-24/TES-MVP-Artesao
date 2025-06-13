@@ -6,7 +6,7 @@ export class ProdutoImagemUseCase {
 
 	async criar(input: Omit<ProdutoImagem, "id" | "created_at">): Promise<void> {
 		const imagem = new ProdutoImagem(
-		Date.now(),
+		"",
 		input.produto_id,
 		input.url,
 		input.descricao,
@@ -16,11 +16,11 @@ export class ProdutoImagemUseCase {
 		await this.imagemRepo.criar(imagem);
 	}
 
-	async listarPorProduto(produtoId: number): Promise<ProdutoImagem[]> {
+	async listarPorProduto(produtoId: string): Promise<ProdutoImagem[]> {
 		return this.imagemRepo.listarPorProduto(produtoId);
 	}
 
-	async deletar(id: number): Promise<void> {
+	async deletar(id: string): Promise<void> {
 		await this.imagemRepo.deletar(id);
 	}
 }

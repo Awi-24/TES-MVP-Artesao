@@ -8,21 +8,21 @@ export class ProdutoRepository implements ProdutoPort {
 		this.produtos.push(produto);
 	}
 
-	async buscarPorId(id: number): Promise<Produto | null> {
+	async buscarPorId(id: string): Promise<Produto | null> {
 		return this.produtos.find(p => p.id === id) ?? null;
 	}
 
-	async listarPorArtesao(artesaoId: number): Promise<Produto[]> {
+	async listarPorArtesao(artesaoId: string): Promise<Produto[]> {
 		return this.produtos.filter(p => p.artesao_id === artesaoId);
 	}
 
-	async atualizar(id: number, dados: Partial<Produto>): Promise<void> {
+	async atualizar(id: string, dados: Partial<Produto>): Promise<void> {
 		const index = this.produtos.findIndex(p => p.id === id);
 		if (index === -1) return;
 		this.produtos[index] = { ...this.produtos[index], ...dados };
 	}
 
-	async deletar(id: number): Promise<void> {
+	async deletar(id: string): Promise<void> {
 		this.produtos = this.produtos.filter(p => p.id !== id);
 	}
 }

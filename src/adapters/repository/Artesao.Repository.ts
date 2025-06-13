@@ -9,7 +9,7 @@ export class ArtesaoRepository implements ArtesaoPort {
 		this.artesoes.push(artesao);
 	}
 
-	async buscarPorId(id: number): Promise<Artesao | null> {
+	async buscarPorId(id: string): Promise<Artesao | null> {
 		return this.artesoes.find(a => a.id === id) ?? null;
 	}
 
@@ -17,13 +17,13 @@ export class ArtesaoRepository implements ArtesaoPort {
 		return this.artesoes.find(a => a.email === email) ?? null;
 	}
 
-	async atualizar(id: number, dados: Partial<Artesao>): Promise<void> {
+	async atualizar(id: string, dados: Partial<Artesao>): Promise<void> {
 		const index = this.artesoes.findIndex(a => a.id === id);
 		if (index === -1) return;
 		this.artesoes[index] = { ...this.artesoes[index], ...dados };
 	}
 
-	async deletar(id: number): Promise<void> {
+	async deletar(id: string): Promise<void> {
 		this.artesoes = this.artesoes.filter(a => a.id !== id);
 	}
 }

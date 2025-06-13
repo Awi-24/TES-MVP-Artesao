@@ -6,7 +6,7 @@ export class ProdutoUseCase {
 
 	async criar(input: Omit<Produto, "id" | "created_at" | "updated_at">): Promise<void> {
 		const produto = new Produto(
-		Date.now(),
+		"",
 		input.artesao_id,
 		input.nome,
 		input.descricao,
@@ -20,19 +20,19 @@ export class ProdutoUseCase {
 		await this.produtoRepo.criar(produto);
 	}
 
-	async buscarPorId(id: number): Promise<Produto | null> {
+	async buscarPorId(id: string): Promise<Produto | null> {
 		return this.produtoRepo.buscarPorId(id);
 	}
 
-	async listarPorArtesao(artesaoId: number): Promise<Produto[]> {
+	async listarPorArtesao(artesaoId: string): Promise<Produto[]> {
 		return this.produtoRepo.listarPorArtesao(artesaoId);
 	}
 
-	async atualizar(id: number, dados: Partial<Produto>): Promise<void> {
+	async atualizar(id: string, dados: Partial<Produto>): Promise<void> {
 		await this.produtoRepo.atualizar(id, dados);
 	}
 
-	async deletar(id: number): Promise<void> {
+	async deletar(id: string): Promise<void> {
 		await this.produtoRepo.deletar(id);
 	}
 }

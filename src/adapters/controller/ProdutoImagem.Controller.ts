@@ -11,13 +11,13 @@ export class ProdutoImagemController {
 	};
 
 	listarPorProduto = async (req: Request, res: Response): Promise<void> => {
-		const produtoId = Number(req.params.produtoId);
+		const produtoId = req.params.produtoId;
 		const imagens = await this.imagemUseCase.listarPorProduto(produtoId);
 		res.json(imagens);
 	};
 
 	deletar = async (req: Request, res: Response): Promise<void> => {
-		const id = Number(req.params.id);
+		const id = req.params.id;
 		await this.imagemUseCase.deletar(id);
 		res.json({ message: "Imagem deletada com sucesso" });
 	};

@@ -2,14 +2,18 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore } from 'firebase/firestore';
 
+import dotenv from "dotenv";
+dotenv.config();
+
+
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyB-1bXt5kFZADVjCLJ1-Onyov8C7JtYkA8",
-  authDomain: "artesao-b27ee.firebaseapp.com",
-  projectId: "artesao-b27ee",
-  storageBucket: "artesao-b27ee.firebasestorage.app",
-  messagingSenderId: "74570059277",
-  appId: "1:74570059277:web:f5c31a2a653883ebb78f44"
+  apiKey: process.env.FIREBASE_API_KEY,
+  authDomain: process.env.FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.FIREBASE_PROJECT_ID,
+  storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.FIREBASE_APP_ID,
 };
 
 // Initialize Firebase

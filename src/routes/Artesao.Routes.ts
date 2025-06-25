@@ -7,6 +7,7 @@ const router = express.Router();
 
 router.post("/", artesaocontroller.criar);
 router.get("/:id", artesaocontroller.buscarPorId);
+router.get("/:email", artesaocontroller.buscarPorEmail);
 router.put("/:id", artesaocontroller.atualizar);
 router.delete("/:id", artesaocontroller.deletar);
 

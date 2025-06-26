@@ -4,6 +4,8 @@
     "firebase": "^11.9.0"
   },
   "devDependencies": {
-    "@types/express": "^5.0.2"
+    "@types/express": "^5.0.2",
+    "@types/winston": "^2.4.4",
+    "winston": "^3.17.0"
   }
 }

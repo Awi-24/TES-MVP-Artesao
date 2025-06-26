@@ -1,3 +1,4 @@
+import logger from "../../logger";
 export class Artesao {
   constructor(
     public id: string,
@@ -11,5 +12,8 @@ export class Artesao {
     public senha_hash: string,
     public created_at: Date,
     public updated_at: Date
-  ) {}
+  ) {logger.debug(`Entidade Artesao criada: { id: ${id}, email: ${email} }`);
+    if (!email.includes("@")) {
+      logger.warn(`Tentativa de criar Artesao com email inválido: ${email}`);
+    }}
 }

@@ -1,3 +1,4 @@
+import logger from "../../logger";
 export class Produto {
   constructor(
     public id: string,
@@ -9,5 +10,5 @@ export class Produto {
     public categoria: string,
     public created_at: Date,
     public updated_at: Date
-  ) {}
+  ) { logger.debug(`Entidade Produto criada: { id: ${id}, nome: ${nome} }`);}
 }

@@ -1,8 +1,23 @@
 {
+  "name": "tes-mvp-artesao",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watchAll",
+    "test:cov": "jest --coverage"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
   "dependencies": {
     "express": "^5.1.0"
   },
   "devDependencies": {
-    "@types/express": "^5.0.2"
+    "@types/express": "^5.0.2",
+    "@types/jest": "^30.0.0",
+    "jest": "^30.0.3",
+    "ts-jest": "^29.4.0"
   }
 }

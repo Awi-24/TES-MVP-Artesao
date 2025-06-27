@@ -13,7 +13,7 @@ describe("ArtesaoUseCase", () => {
     mockArtesaoPort = {
       criar: jest.fn(),
       buscarPorId: jest.fn(),
-      buscarPorEmail: jest.fn(), // Novo método mockado
+      buscarPorEmail: jest.fn(), 
       atualizar: jest.fn(),
       deletar: jest.fn(),
     };
@@ -34,7 +34,7 @@ describe("ArtesaoUseCase", () => {
         senha_hash: "hashed_password",
       };
 
-      // Cenário: O email ainda NÃO existe no banco
+      // Cenário: O email ainda não existe no banco
       (mockArtesaoPort.buscarPorEmail as jest.Mock).mockResolvedValue(null);
 
       await artesaoUseCase.criar(artesaoData);

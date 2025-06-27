@@ -1,3 +1,4 @@
+
 -- Tabela de Artesãos
 CREATE TABLE artesao (
     id SERIAL PRIMARY KEY,

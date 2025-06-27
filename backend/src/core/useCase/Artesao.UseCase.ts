@@ -4,10 +4,13 @@ import { ArtesaoPort } from "../ports/Artesao.Port";
 export class ArtesaoUseCase {
 	constructor(private readonly artesaoRepo: ArtesaoPort) {}
 
-	async criar(input: Omit<Artesao, "id" | "created_at" | "updated_at">): Promise<void> {
+	async criar(input: Omit<Artesao, "id" | "updated_at" | "created_at">): Promise<void> {
+		console.log("entrou")
 		const existente = await this.artesaoRepo.buscarPorEmail(input.email);
+		console.log("aqui")
 		if (existente) throw new Error("Email já cadastrado");
-
+		
+		console.log("input", input)
 		const novo = new Artesao(
 			"",
 			input.nome,
@@ -29,7 +32,7 @@ export class ArtesaoUseCase {
 		return this.artesaoRepo.buscarPorId(id);
 	}
 
-	async buscarPorEmail(email: string): Promise<Artesao | null> {
+	async buscarPorEmail(email: string): Promise<Omit<Artesao, "id" | "updated_at" | "created_at"> | null> {
 		return this.artesaoRepo.buscarPorEmail(email);
 	}
 

@@ -7,6 +7,7 @@ import { Input } from "../components/ui/input"
 import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/card"
 import { Select, SelectItem } from "@/components/ui/select"
 import { ShoppingBag, Eye, EyeOff, Lock } from "lucide-react"
+import axios from "axios"
 
 const Cadastro = () => {
   const [showPassword, setShowPassword] = useState(false)
@@ -29,6 +30,8 @@ const Cadastro = () => {
     "RO", "RR", "SC", "SP", "SE", "TO",
   ]
 
+  const [res, setRes] = useState()
+
   const handleSubmit = async (e) => {
     e.preventDefault()
 
@@ -41,30 +44,35 @@ const Cadastro = () => {
       nome: formData.nome,
       email: formData.email,
       telefone: formData.telefone,
+      logradouro: formData.logradouro,
       cidade: formData.cidade,
       estado: formData.estado,
-      logradouro: formData.logradouro,
       cep: formData.cep,
-      senha: formData.password, // o backend deve gerar o hash
+      senha_hash: formData.password
     }
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/artesao`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      })
+      axios.post(`${import.meta.env.VITE_API_URL}/artesao`, payload)
+        .then((response) => {
+          console.log(response.data())
+          setRes(response.data())
+          // if (!respose.data().ok) {
+          //   const errorData = respose.json()
+          //   throw new Error(errorData.message || "Erro ao cadastrar")
+          // }
+        })
 
-      if (!res.ok) {
-        const errorData = await res.json()
-        throw new Error(errorData.message || "Erro ao cadastrar")
-      }
+      // const res = await fetch(`${import.meta.env.VITE_API_URL}/artesao`, {
+      //   method: "POST",
+      //   headers: { "Content-Type": "application/json" },
+      //   body: JSON.stringify(payload),
+      // })
 
-      const data = await res.json()
-      alert("Cadastro realizado com sucesso!")
+      // const data = await res.data.json()
+      // alert("Cadastro realizado com sucesso!")
 
-      localStorage.setItem("userId", data.id) // armazena ID se necessário
-      window.location.href = "/perfil" // redireciona para tela de perfil
+      // localStorage.setItem("userId", data.id) // armazena ID se necessário
+      // window.location.href = "/perfil" // redireciona para tela de perfil
 
     } catch (error) {
       console.error(error)

@@ -25,7 +25,7 @@ const Navbar = () => {
   const navItems = [
     { path: "/", label: "Início", icon: Home },
     { path: "/login", label: "Login", icon: LogIn },
-    { path: "/cadastro", label: "Cadastro", icon: UserPlus },
+    // { path: "/cadastro", label: "Cadastro", icon: UserPlus },
     { path: "/cadastro-produto", label: "Cadastrar Produto", icon: Plus },
   ]
 

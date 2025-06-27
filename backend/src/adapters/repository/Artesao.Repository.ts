@@ -6,8 +6,9 @@ import db from '../../db/db'
 
 export class ArtesaoRepository implements ArtesaoPort {
 
-	async criar(artesao: Omit<Artesao, "id">): Promise<void> {
-		const data = await addDoc(collection(db, "Artesao"), {
+	async criar(artesao: Omit<Artesao, "id" | "updated_at" | "created_at">): Promise<void> {
+		console.log("artesao: ", artesao)
+		await addDoc(collection(db, "Artesao"), {
 			...artesao
 		})
 	}

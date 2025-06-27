@@ -1,7 +1,7 @@
 import { collection, doc, getDoc, where, query, getDocs, addDoc, updateDoc, deleteDoc } from "firebase/firestore";
 import { Artesao } from "../../core/entities/Artesao";
 import { ArtesaoPort } from "../../core/ports/Artesao.Port";
-import db from '../../db/db'
+import db from '../../db/db';
 
 
 export class ArtesaoRepository implements ArtesaoPort {

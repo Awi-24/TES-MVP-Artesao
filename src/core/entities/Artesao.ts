@@ -1,6 +1,6 @@
 export class Artesao {
   constructor(
-    public id: number,
+    public id: string,
     public nome: string,
     public email: string,
     public telefone: string,

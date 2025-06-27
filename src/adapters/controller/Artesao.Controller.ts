@@ -16,7 +16,7 @@ export class ArtesaoController {
 	};
 
 	buscarPorId = async (req: Request, res: Response): Promise<void> => {
-		const id = Number(req.params.id);
+		const id = req.params.id;
 		const artesao = await this.artesaoUseCase.buscarPorId(id);
 		if (!artesao) {
 		res.status(404).json({ message: "Artesão não encontrado" });
@@ -26,13 +26,13 @@ export class ArtesaoController {
 	};
 
 	atualizar = async (req: Request, res: Response): Promise<void> => {
-		const id = Number(req.params.id);
+		const id = req.params.id;
 		await this.artesaoUseCase.atualizar(id, req.body);
 		res.json({ message: "Artesão atualizado com sucesso" });
 	};
 
 	deletar = async (req: Request, res: Response): Promise<void> => {
-		const id = Number(req.params.id);
+		const id = req.params.id;
 		await this.artesaoUseCase.deletar(id);
 		res.json({ message: "Artesão deletado com sucesso" });
 	};

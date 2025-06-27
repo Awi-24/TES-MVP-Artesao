@@ -11,7 +11,7 @@ export class ProdutoController {
 	};
 
 	buscarPorId = async (req: Request, res: Response): Promise<void> => {
-		const id = Number(req.params.id);
+		const id = req.params.id;
 		const produto = await this.produtoUseCase.buscarPorId(id);
 		if (!produto) {
 		res.status(404).json({ message: "Produto não encontrado" });
@@ -21,19 +21,19 @@ export class ProdutoController {
 	};
 
 	listarPorArtesao = async (req: Request, res: Response): Promise<void> => {
-		const artesaoId = Number(req.params.artesaoId);
+		const artesaoId = req.params.artesaoId;
 		const produtos = await this.produtoUseCase.listarPorArtesao(artesaoId);
 		res.json(produtos);
 	};
 
 	atualizar = async (req: Request, res: Response): Promise<void> => {
-		const id = Number(req.params.id);
+		const id = req.params.id;
 		await this.produtoUseCase.atualizar(id, req.body);
 		res.json({ message: "Produto atualizado com sucesso" });
 	};
 
 	deletar = async (req: Request, res: Response): Promise<void> => {
-		const id = Number(req.params.id);
+		const id = req.params.id;
 		await this.produtoUseCase.deletar(id);
 		res.json({ message: "Produto deletado com sucesso" });
 	};

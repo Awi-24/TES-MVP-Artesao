@@ -8,11 +8,11 @@ export class ProdutoImagemRepository implements ProdutoImagemPort {
 		this.imagens.push(imagem);
 	}
 
-	async listarPorProduto(produtoId: number): Promise<ProdutoImagem[]> {
+	async listarPorProduto(produtoId: string): Promise<ProdutoImagem[]> {
 		return this.imagens.filter(i => i.produto_id === produtoId);
 	}
 
-	async deletar(id: number): Promise<void> {
+	async deletar(id: string): Promise<void> {
 		this.imagens = this.imagens.filter(i => i.id !== id);
 	}
 }

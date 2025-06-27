@@ -1,7 +1,7 @@
 export class Produto {
   constructor(
-    public id: number,
-    public artesao_id: number,
+    public id: string,
+    public artesao_id: string,
     public nome: string,
     public descricao: string,
     public preco: number,

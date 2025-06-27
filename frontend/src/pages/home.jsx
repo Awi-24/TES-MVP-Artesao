@@ -4,10 +4,7 @@ import { useState, useMemo, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
-import {
-  Select,
-  SelectItem,
-} from "@/components/ui/select"
+import { Select, SelectItem } from "@/components/ui/select"
 import {
   Search,
   Filter,
@@ -24,33 +21,21 @@ const Home = () => {
   const [priceRange, setPriceRange] = useState("")
   const [selectedState, setSelectedState] = useState("")
   const [sortBy, setSortBy] = useState("relevancia")
-  const [produtos, setProdutos] = useState([
-    {
-      id: "exemplo",
-      nome: "Produto Artesanal Exemplo",
-      preco: 99.9,
-      categoria: "Cerâmica",
-      artesao: "Exemplo",
-      cidade: "Exemplo City",
-      estado: "EX",
-      rating: 5,
-      reviews: 1,
-      imagem: "/placeholder.svg?height=300&width=300",
-      favorito: false,
-    },
-  ])
+  const [produtos, setProdutos] = useState([])
 
   useEffect(() => {
-    fetch("http://localhost:3000/api/produtos")
-      .then((res) => res.json())
-      .then((data) => {
-        if (Array.isArray(data) && data.length > 0) {
-          setProdutos(data)
-        }
-      })
-      .catch((err) => {
+    const fetchProdutos = async () => {
+      try {
+        const res = await fetch("http://localhost:3000/produto")
+        if (!res.ok) throw new Error("Erro ao buscar produtos")
+        const data = await res.json()
+        // Supondo que data seja array de produtos conforme backend
+        setProdutos(data)
+      } catch (err) {
         console.error("Erro ao buscar produtos:", err)
-      })
+      }
+    }
+    fetchProdutos()
   }, [])
 
   const categorias = [
@@ -63,7 +48,9 @@ const Home = () => {
     "Joias",
     "Decoração",
   ]
+
   const estados = ["BA", "PE", "CE", "MG", "SP", "PR", "RJ", "RS"]
+
   const faixasPreco = [
     { label: "Até R$ 50", value: "0-50" },
     { label: "R$ 51 - R$ 100", value: "51-100" },
@@ -74,20 +61,28 @@ const Home = () => {
 
   const produtosFiltrados = useMemo(() => {
     const filtered = produtos.filter((produto) => {
+      // Ajustar propriedades conforme sua API
+      const nome = produto.nome || ""
+      // Supondo que artesao seja um objeto com nome ou artesao_id
+      const artesaoNome = produto.artesao_nome || produto.artesao?.nome || "Desconhecido"
+      const categoria = produto.categoria || ""
+      const estado = produto.estado || ""
+      const preco = Number(produto.preco) || 0
+
       const matchSearch =
-        produto.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        produto.artesao.toLowerCase().includes(searchTerm.toLowerCase())
-      const matchCategory =
-        !selectedCategory || produto.categoria === selectedCategory
-      const matchState = !selectedState || produto.estado === selectedState
+        nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        artesaoNome.toLowerCase().includes(searchTerm.toLowerCase())
+
+      const matchCategory = !selectedCategory || categoria === selectedCategory
+      const matchState = !selectedState || estado === selectedState
 
       let matchPrice = true
       if (priceRange) {
         if (priceRange === "500+") {
-          matchPrice = produto.preco >= 500
+          matchPrice = preco >= 500
         } else {
           const [min, max] = priceRange.split("-").map(Number)
-          matchPrice = produto.preco >= min && produto.preco <= max
+          matchPrice = preco >= min && preco <= max
         }
       }
 
@@ -102,10 +97,10 @@ const Home = () => {
         filtered.sort((a, b) => b.preco - a.preco)
         break
       case "rating":
-        filtered.sort((a, b) => b.rating - a.rating)
+        filtered.sort((a, b) => (b.rating || 0) - (a.rating || 0))
         break
       case "nome":
-        filtered.sort((a, b) => a.nome.localeCompare(b.nome))
+        filtered.sort((a, b) => (a.nome || "").localeCompare(b.nome || ""))
         break
     }
 
@@ -266,9 +261,9 @@ const Home = () => {
 
                 <div className="flex items-center space-x-1 mb-2">
                   <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                  <span className="text-sm font-medium">{produto.rating}</span>
+                  <span className="text-sm font-medium">{produto.rating || 0}</span>
                   <span className="text-sm text-gray-500">
-                    ({produto.reviews})
+                    ({produto.reviews || 0})
                   </span>
                 </div>
 
@@ -280,12 +275,12 @@ const Home = () => {
                 </div>
 
                 <p className="text-sm text-gray-600 mb-3">
-                  por {produto.artesao}
+                  por {produto.artesao_nome || produto.artesao?.nome || "Desconhecido"}
                 </p>
 
                 <div className="flex items-center justify-between">
                   <span className="text-2xl font-bold text-green-600">
-                    R$ {produto.preco.toFixed(2).replace(".", ",")}
+                    R$ {Number(produto.preco).toFixed(2).replace(".", ",")}
                   </span>
                   <Button
                     size="sm"

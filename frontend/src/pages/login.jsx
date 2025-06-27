@@ -1,67 +1,94 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useNavigate, Link } from "react-router-dom"
-import { toast } from "sonner"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Card,
   CardHeader,
   CardTitle,
-  CardContent
-} from "@/components/ui/card"
-import {
-  ShoppingBag,
-  Eye,
-  EyeOff,
-  Mail,
-  Lock
-} from "lucide-react"
+  CardContent,
+} from "@/components/ui/card";
+import { ShoppingBag, Eye, EyeOff, Mail, Lock } from "lucide-react";
 
 const Login = () => {
-  const [showPassword, setShowPassword] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const navigate = useNavigate()
-
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
-  })
+    nome: "",
+  });
+
+  const router = useRouter();
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    })
-  }
+    setFormData((f) => ({ ...f, [e.target.name]: e.target.value }));
+  };
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setLoading(true)
+    e.preventDefault();
+    setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:3000/api/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      })
+      // Verifica se o email existe
+      const resEmail = await fetch(
+        `http://localhost:3000/email/${encodeURIComponent(formData.email)}`
+      );
 
-      const data = await response.json()
+      if (resEmail.status === 404) {
+        // Cria novo artesão
+        if (!formData.nome) {
+          toast.error("Informe seu nome para criar conta.");
+          setLoading(false);
+          return;
+        }
 
-      if (response.ok) {
-        toast.success("Login realizado com sucesso!")
-        navigate("/") // Redirecione para a tela principal
-      } else {
-        toast.error(data.message || "Erro ao fazer login.")
+        const resCreate = await fetch("http://localhost:3000/id", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            nome: formData.nome,
+            email: formData.email,
+            senha: formData.password,
+          }),
+        });
+
+        if (!resCreate.ok) {
+          toast.error("Erro ao criar conta.");
+          setLoading(false);
+          return;
+        }
+
+        toast.success("Conta criada! Faça login agora.");
+        setLoading(false);
+        return;
       }
+
+      if (!resEmail.ok) {
+        toast.error("Erro ao buscar email.");
+        setLoading(false);
+        return;
+      }
+
+      // Se email existe, "logar"
+      const data = await resEmail.json();
+      if (data.senha !== formData.password) {
+        toast.error("Senha incorreta.");
+        setLoading(false);
+        return;
+      }
+
+      toast.success("Login realizado com sucesso!");
+      router.push("/");
     } catch (error) {
-      console.error(error)
-      toast.error("Erro de conexão com o servidor.")
+      toast.error("Erro de conexão.");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
@@ -71,15 +98,30 @@ const Login = () => {
             <ShoppingBag className="h-12 w-12 text-blue-600" />
             <span className="text-3xl font-bold text-gray-900">ArtesãoShop</span>
           </div>
-          <p className="text-gray-600">Entre na sua conta</p>
+          <p className="text-gray-600">Entre ou crie sua conta</p>
         </div>
 
         <Card className="shadow-xl">
           <CardHeader>
-            <CardTitle className="text-2xl text-center">Login</CardTitle>
+            <CardTitle className="text-2xl text-center">Login / Cadastro</CardTitle>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
+              {!formData.nome && (
+                <div className="space-y-2">
+                  <label htmlFor="nome" className="text-sm font-medium text-gray-700">
+                    Nome (apenas para cadastro)
+                  </label>
+                  <Input
+                    id="nome"
+                    name="nome"
+                    placeholder="Seu nome completo"
+                    value={formData.nome}
+                    onChange={handleChange}
+                  />
+                </div>
+              )}
+
               <div className="space-y-2">
                 <label htmlFor="email" className="text-sm font-medium text-gray-700">
                   Email
@@ -125,44 +167,19 @@ const Login = () => {
                 </div>
               </div>
 
-              <div className="text-right">
-                <Link to="/esqueci-senha" className="text-sm text-blue-600 hover:text-blue-800">
-                  Esqueci minha senha
-                </Link>
-              </div>
-
               <Button
                 type="submit"
                 className="w-full bg-blue-600 hover:bg-blue-700"
                 disabled={loading}
               >
-                {loading ? "Entrando..." : "Entrar"}
+                {loading ? "Processando..." : "Entrar / Criar Conta"}
               </Button>
-
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-300" />
-                </div>
-                <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-white text-gray-500">ou</span>
-                </div>
-              </div>
-
-              <div className="text-center">
-                <span className="text-sm text-gray-600">Não tem uma conta? </span>
-                <Link
-                  to="/cadastro"
-                  className="text-sm text-blue-600 hover:text-blue-800 font-medium"
-                >
-                  Cadastre-se aqui
-                </Link>
-              </div>
             </form>
           </CardContent>
         </Card>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Login
+export default Login;

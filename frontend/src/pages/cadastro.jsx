@@ -7,7 +7,6 @@ import { Input } from "../components/ui/input"
 import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/card"
 import { Select, SelectItem } from "@/components/ui/select"
 import { ShoppingBag, Eye, EyeOff, Lock } from "lucide-react"
-import { v4 as uuidv4 } from "uuid"
 
 const Cadastro = () => {
   const [showPassword, setShowPassword] = useState(false)
@@ -25,7 +24,9 @@ const Cadastro = () => {
   })
 
   const estados = [
-    "AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","PA","PB","PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO",
+    "AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA", "MT",
+    "MS", "MG", "PA", "PB", "PR", "PE", "PI", "RJ", "RN", "RS",
+    "RO", "RR", "SC", "SP", "SE", "TO",
   ]
 
   const handleSubmit = async (e) => {
@@ -36,10 +37,7 @@ const Cadastro = () => {
       return
     }
 
-    const artesaoId = uuidv4()
-
     const payload = {
-      id: artesaoId,
       nome: formData.nome,
       email: formData.email,
       telefone: formData.telefone,
@@ -47,11 +45,11 @@ const Cadastro = () => {
       estado: formData.estado,
       logradouro: formData.logradouro,
       cep: formData.cep,
-      senha_hash: formData.password,
+      senha: formData.password, // o backend deve gerar o hash
     }
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/artesao/cadastro`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/artesao`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -64,9 +62,9 @@ const Cadastro = () => {
 
       const data = await res.json()
       alert("Cadastro realizado com sucesso!")
-      console.log("ID do artesão:", data.id)
 
-      // Aqui você pode limpar o formulário ou redirecionar
+      localStorage.setItem("userId", data.id) // armazena ID se necessário
+      window.location.href = "/perfil" // redireciona para tela de perfil
 
     } catch (error) {
       console.error(error)

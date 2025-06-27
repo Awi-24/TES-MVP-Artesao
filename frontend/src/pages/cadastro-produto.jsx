@@ -4,12 +4,15 @@ import { useState } from "react"
 import { Button } from "../components/ui/button"
 import { Input } from "../components/ui/input"
 import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/card"
-import { Select, SelectItem } from "@/components/ui/select" // Use o Select simplificado que te passei
+import { Select, SelectItem } from "@/components/ui/select"
 import { DollarSign, Package, Tag, FileText } from "lucide-react"
 
 const CadastroProduto = () => {
+  // ** Importante: aqui o artesao_id deve vir do usuário logado, por exemplo do localStorage
+  const artesaoId = localStorage.getItem("userId") || ""
+
   const [formData, setFormData] = useState({
-    artesao_id: "id-do-artesao-aqui", // substituir pela lógica real
+    artesao_id: artesaoId,
     nome: "",
     categoria: "",
     preco: "",
@@ -35,6 +38,11 @@ const CadastroProduto = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
 
+    if (!formData.artesao_id) {
+      alert("Usuário não autenticado.")
+      return
+    }
+
     try {
       const produtoParaEnviar = {
         artesao_id: formData.artesao_id,
@@ -45,25 +53,36 @@ const CadastroProduto = () => {
         quantidade: Number(formData.quantidade) || 0,
       }
 
-      const response = await fetch('/api/produtos', {
-        method: 'POST',
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/produto`, {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(produtoParaEnviar),
       })
 
       if (!response.ok) {
-        throw new Error('Erro ao cadastrar produto')
+        const errorData = await response.json()
+        throw new Error(errorData.message || "Erro ao cadastrar produto")
       }
 
       const data = await response.json()
-      console.log('Produto cadastrado:', data)
-      // Limpar formulário ou redirecionar aqui se quiser
+      console.log("Produto cadastrado:", data)
+      alert("Produto cadastrado com sucesso!")
+
+      // Limpar formulário
+      setFormData({
+        ...formData,
+        nome: "",
+        categoria: "",
+        preco: "",
+        descricao: "",
+        quantidade: "",
+      })
 
     } catch (error) {
       console.error(error)
-      // Exibir mensagem para o usuário aqui
+      alert(`Erro ao cadastrar produto: ${error.message}`)
     }
   }
 
@@ -126,6 +145,7 @@ const CadastroProduto = () => {
                       onValueChange={handleSelectChange}
                       className="w-full pl-10"
                       placeholder="Selecione a categoria"
+                      required
                     >
                       <SelectItem value="">Selecione a categoria</SelectItem>
                       {categorias.map((categoria) => (

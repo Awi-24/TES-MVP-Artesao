@@ -12,10 +12,16 @@ const PerfilUsuario = ({ onLogout, onEdit }) => {
 
   useEffect(() => {
     const fetchUser = async () => {
+      const userId = localStorage.getItem("userId")
+      if (!userId) {
+        toast.error("Usuário não autenticado.")
+        setLoading(false)
+        return
+      }
+
       try {
-        const response = await fetch("http://localhost:3000/api/perfil", {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/artesao/${userId}`, {
           method: "GET",
-          credentials: "include", // se estiver usando cookies
           headers: {
             "Content-Type": "application/json",
           },
@@ -58,34 +64,27 @@ const PerfilUsuario = ({ onLogout, onEdit }) => {
           </CardHeader>
 
           <CardContent className="space-y-6">
-            {/* Nome */}
             <Campo label="Nome Completo" value={user.nome} icon={<User />} />
-            {/* Email */}
             <Campo label="Email" value={user.email} icon={<Mail />} />
-            {/* Telefone */}
             <Campo label="Telefone" value={user.telefone || "-"} icon={<Phone />} />
-            {/* Cidade e Estado */}
             <div className="grid grid-cols-2 gap-4">
               <Campo label="Cidade" value={user.cidade} icon={<MapPin />} />
               <Campo label="Estado" value={user.estado} />
             </div>
-            {/* Tipo de Artesão */}
-            <Campo label="Tipo de Artesão" value={user.tipoArtesao} />
-            {/* Especialidade */}
+            <Campo label="Tipo de Artesão" value={user.tipoArtesao || "-"} />
             <Campo label="Especialidade" value={user.especialidade || "-"} />
 
-            {/* Botões */}
             <div className="flex space-x-4 pt-4">
-              <Button
-                variant="outline"
-                className="flex-1"
-                onClick={() => onEdit && onEdit()}
-              >
+              <Button variant="outline" className="flex-1" onClick={() => onEdit && onEdit()}>
                 Editar Perfil
               </Button>
               <Button
                 className="flex-1 bg-green-600 hover:bg-green-700"
-                onClick={() => onLogout && onLogout()}
+                onClick={() => {
+                  localStorage.removeItem("userId")
+                  onLogout && onLogout()
+                  window.location.href = "/login"
+                }}
               >
                 Sair
               </Button>

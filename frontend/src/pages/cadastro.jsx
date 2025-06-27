@@ -5,14 +5,9 @@ import { Link } from "react-router-dom"
 import { Button } from "../components/ui/button"
 import { Input } from "../components/ui/input"
 import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/card"
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from "@/components/ui/select"
-import { ShoppingBag, Eye, EyeOff, User, Mail, Lock, Phone, MapPin } from "lucide-react"
+import { Select, SelectItem } from "@/components/ui/select"
+import { ShoppingBag, Eye, EyeOff, Lock } from "lucide-react"
+import { v4 as uuidv4 } from "uuid"
 
 const Cadastro = () => {
   const [showPassword, setShowPassword] = useState(false)
@@ -23,8 +18,8 @@ const Cadastro = () => {
     telefone: "",
     cidade: "",
     estado: "",
-    tipoArtesao: "",
-    especialidade: "",
+    logradouro: "",
+    cep: "",
     password: "",
     confirmPassword: "",
   })
@@ -33,30 +28,52 @@ const Cadastro = () => {
     "AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","PA","PB","PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO",
   ]
 
-  const tiposArtesao = [
-    "Ceramista",
-    "Marceneiro",
-    "Costureiro(a)",
-    "Joalheiro(a)",
-    "Pintor(a)",
-    "Escultor(a)",
-    "Tecelão/Tecelã",
-    "Bordadeiro(a)",
-    "Sapateiro(a)",
-    "Outro",
-  ]
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
+
     if (formData.password !== formData.confirmPassword) {
       alert("As senhas não coincidem!")
       return
     }
-    console.log("Cadastro:", formData)
-    // Lógica de cadastro aqui
+
+    const artesaoId = uuidv4()
+
+    const payload = {
+      id: artesaoId,
+      nome: formData.nome,
+      email: formData.email,
+      telefone: formData.telefone,
+      cidade: formData.cidade,
+      estado: formData.estado,
+      logradouro: formData.logradouro,
+      cep: formData.cep,
+      senha_hash: formData.password,
+    }
+
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/artesao/cadastro`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      })
+
+      if (!res.ok) {
+        const errorData = await res.json()
+        throw new Error(errorData.message || "Erro ao cadastrar")
+      }
+
+      const data = await res.json()
+      alert("Cadastro realizado com sucesso!")
+      console.log("ID do artesão:", data.id)
+
+      // Aqui você pode limpar o formulário ou redirecionar
+
+    } catch (error) {
+      console.error(error)
+      alert(`Erro ao cadastrar artesão: ${error.message}`)
+    }
   }
 
-  // Controla mudanças em inputs normais
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -64,7 +81,6 @@ const Cadastro = () => {
     })
   }
 
-  // Para atualizar selects personalizados (estado e tipoArtesao)
   const handleSelectChange = (field, value) => {
     setFormData({
       ...formData,
@@ -75,7 +91,6 @@ const Cadastro = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 flex items-center justify-center p-4">
       <div className="w-full max-w-2xl">
-        {/* Logo */}
         <div className="text-center mb-8">
           <div className="flex items-center justify-center space-x-2 mb-4">
             <ShoppingBag className="h-12 w-12 text-green-600" />
@@ -90,79 +105,34 @@ const Cadastro = () => {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
-
-              {/* Dados Pessoais */}
-              {/* ... seus Inputs normais aqui ... */}
-
-              {/* Estado e Tipo de Artesão com Select personalizado */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label htmlFor="estado" className="text-sm font-medium text-gray-700">
-                    Estado *
-                  </label>
-                  <Select
-                    value={formData.estado}
-                    onValueChange={(value) => handleSelectChange("estado", value)}
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Selecione o estado" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="">Selecione o estado</SelectItem>
-                      {estados.map((estado) => (
-                        <SelectItem key={estado} value={estado}>
-                          {estado}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <label htmlFor="tipoArtesao" className="text-sm font-medium text-gray-700">
-                    Tipo de Artesão *
-                  </label>
-                  <Select
-                    value={formData.tipoArtesao}
-                    onValueChange={(value) => handleSelectChange("tipoArtesao", value)}
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Selecione o tipo" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="">Selecione o tipo</SelectItem>
-                      {tiposArtesao.map((tipo) => (
-                        <SelectItem key={tipo} value={tipo}>
-                          {tipo}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+                <Input name="nome" placeholder="Nome" value={formData.nome} onChange={handleChange} required />
+                <Input name="email" placeholder="Email" value={formData.email} onChange={handleChange} required />
+                <Input name="telefone" placeholder="Telefone" value={formData.telefone} onChange={handleChange} required />
+                <Input name="cidade" placeholder="Cidade" value={formData.cidade} onChange={handleChange} required />
+                <Input name="logradouro" placeholder="Logradouro" value={formData.logradouro} onChange={handleChange} required />
+                <Input name="cep" placeholder="CEP" value={formData.cep} onChange={handleChange} required />
               </div>
 
-              {/* O resto do formulário permanece igual */}
-
-              {/* Especialidade */}
               <div className="space-y-2">
-                <label htmlFor="especialidade" className="text-sm font-medium text-gray-700">
-                  Especialidade
-                </label>
-                <Input
-                  id="especialidade"
-                  name="especialidade"
-                  placeholder="Descreva sua especialidade (ex: cerâmica decorativa, móveis rústicos)"
-                  value={formData.especialidade}
-                  onChange={handleChange}
-                />
+                <label htmlFor="estado" className="text-sm font-medium text-gray-700">Estado *</label>
+                <Select
+                  value={formData.estado}
+                  onValueChange={(value) => handleSelectChange("estado", value)}
+                  placeholder="Selecione o estado"
+                  className="w-full"
+                >
+                  {estados.map((estado) => (
+                    <SelectItem key={estado} value={estado}>
+                      {estado}
+                    </SelectItem>
+                  ))}
+                </Select>
               </div>
 
-              {/* Senhas */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label htmlFor="password" className="text-sm font-medium text-gray-700">
-                    Senha *
-                  </label>
+                  <label htmlFor="password" className="text-sm font-medium text-gray-700">Senha *</label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                     <Input
@@ -186,9 +156,7 @@ const Cadastro = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <label htmlFor="confirmPassword" className="text-sm font-medium text-gray-700">
-                    Confirmar Senha *
-                  </label>
+                  <label htmlFor="confirmPassword" className="text-sm font-medium text-gray-700">Confirmar Senha *</label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                     <Input
@@ -212,12 +180,10 @@ const Cadastro = () => {
                 </div>
               </div>
 
-              {/* Botão de Cadastro */}
               <Button type="submit" className="w-full bg-green-600 hover:bg-green-700">
                 Cadastrar como Artesão
               </Button>
 
-              {/* Link para login */}
               <div className="text-center">
                 <span className="text-sm text-gray-600">Já tem uma conta? </span>
                 <Link to="/login" className="text-sm text-green-600 hover:text-green-800 font-medium">

@@ -1,18 +1,14 @@
-import React, { useState, useEffect, useRef } from "react";
-import { cn } from "../../libs/utils";
+"use client"
 
-const SelectGroup = ({ children, className, ...props }) => (
-  <div className={cn("p-1", className)} {...props}>
-    {children}
-  </div>
-);
+import React, { useState, useRef, useEffect } from "react";
+import { cn } from "../../libs/utils";
 
 const SelectTrigger = React.forwardRef(({ children, className, onClick, ...props }, ref) => (
   <button
     ref={ref}
     type="button"
     className={cn(
-      "flex items-center justify-between w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+      "flex items-center justify-between w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
       className
     )}
     onClick={onClick}
@@ -21,33 +17,12 @@ const SelectTrigger = React.forwardRef(({ children, className, onClick, ...props
     {children}
   </button>
 ));
+SelectTrigger.displayName = "SelectTrigger";
 
-const SelectValue = ({ children, className, placeholder, value }) => (
+const SelectValue = ({ placeholder, value, className }) => (
   <span className={cn("text-sm", className)}>
-    {value ? children : placeholder}
+    {value ? value : placeholder}
   </span>
-);
-
-const SelectContent = React.forwardRef(({ children, className, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn(
-      // Fundo branco sólido para melhor contraste
-      "absolute mt-1 z-50 min-w-[8rem] max-h-60 overflow-auto rounded-lg border border-gray-300 bg-white text-gray-900 shadow-lg animate-in fade-in-center-down",
-      // scrollbar customizada suave (opcional, pode remover se quiser)
-      "scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100",
-      className
-    )}
-    {...props}
-  >
-    {children}
-  </div>
-));
-
-const SelectLabel = ({ children, className, ...props }) => (
-  <div className={cn("py-1.5 pl-8 pr-2 text-sm font-semibold text-gray-700", className)} {...props}>
-    {children}
-  </div>
 );
 
 const SelectItem = React.forwardRef(({ children, className, value, onSelect, ...props }, ref) => (
@@ -56,11 +31,7 @@ const SelectItem = React.forwardRef(({ children, className, value, onSelect, ...
     tabIndex={0}
     role="option"
     className={cn(
-      "relative flex w-full cursor-pointer select-none items-center rounded-md py-2 px-3 text-sm outline-none",
-      // Hover com fundo azul claro e texto escuro para destaque
-      "hover:bg-blue-100 hover:text-blue-900",
-      // Foco com anel azul para acessibilidade
-      "focus:bg-blue-200 focus:text-blue-900 focus:outline-none",
+      "cursor-pointer select-none rounded-md py-2 px-3 text-sm hover:bg-blue-100 hover:text-blue-900 focus:bg-blue-200 focus:text-blue-900 outline-none",
       className
     )}
     onClick={() => onSelect(value)}
@@ -75,63 +46,31 @@ const SelectItem = React.forwardRef(({ children, className, value, onSelect, ...
     {children}
   </div>
 ));
+SelectItem.displayName = "SelectItem";
 
-const SelectSeparator = ({ className, ...props }) => (
-  <div className={cn("-mx-1 my-1 h-px bg-gray-200", className)} {...props} />
-);
-
-const SelectScrollUpButton = ({ className, ...props }) => (
-  <div
-    className={cn(
-      "flex items-center justify-center h-6 w-full cursor-default rounded-t py-0.5 text-sm opacity-50 group-hover:opacity-100 data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
-      className
-    )}
-    {...props}
-  />
-);
-
-const SelectScrollDownButton = ({ className, ...props }) => (
-  <div
-    className={cn(
-      "flex items-center justify-center h-6 w-full cursor-default rounded-b py-0.5 text-sm opacity-50 group-hover:opacity-100 data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
-      className
-    )}
-    {...props}
-  />
-);
-
-const Select = ({ value, onValueChange, children, placeholder = "Selecione...", className }) => {
+const Select = React.forwardRef(({ value, onValueChange, children, placeholder = "Selecione...", className }, ref) => {
   const [open, setOpen] = useState(false);
   const triggerRef = useRef(null);
-  const contentRef = useRef(null);
+  const containerRef = useRef(null);
+
+  React.useImperativeHandle(ref, () => containerRef.current);
 
   useEffect(() => {
     function onClickOutside(event) {
       if (
-        contentRef.current &&
-        !contentRef.current.contains(event.target) &&
-        triggerRef.current &&
-        !triggerRef.current.contains(event.target)
+        containerRef.current &&
+        !containerRef.current.contains(event.target)
       ) {
         setOpen(false);
       }
     }
     if (open) {
       document.addEventListener("mousedown", onClickOutside);
-    } else {
-      document.removeEventListener("mousedown", onClickOutside);
     }
     return () => {
       document.removeEventListener("mousedown", onClickOutside);
     };
   }, [open]);
-
-  let selectedLabel = null;
-  React.Children.forEach(children, (child) => {
-    if (child.type === SelectItem && child.props.value === value) {
-      selectedLabel = child.props.children;
-    }
-  });
 
   const handleSelect = (val) => {
     onValueChange(val);
@@ -139,7 +78,7 @@ const Select = ({ value, onValueChange, children, placeholder = "Selecione...", 
   };
 
   return (
-    <div className={cn("relative inline-block w-full", className)}>
+    <div ref={containerRef} className={cn("relative w-full", className)}>
       <SelectTrigger
         ref={triggerRef}
         aria-haspopup="listbox"
@@ -147,9 +86,7 @@ const Select = ({ value, onValueChange, children, placeholder = "Selecione...", 
         onClick={() => setOpen((o) => !o)}
         type="button"
       >
-        <SelectValue value={value} placeholder={placeholder}>
-          {selectedLabel}
-        </SelectValue>
+        <SelectValue value={value} placeholder={placeholder} />
         <svg
           className={`ml-2 h-4 w-4 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
           xmlns="http://www.w3.org/2000/svg"
@@ -160,32 +97,24 @@ const Select = ({ value, onValueChange, children, placeholder = "Selecione...", 
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
         </svg>
       </SelectTrigger>
+
       {open && (
-        <SelectContent ref={contentRef} role="listbox" tabIndex={-1}>
+        <div
+          role="listbox"
+          tabIndex={-1}
+          className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md border border-gray-300 bg-white shadow-lg z-10"
+        >
           {React.Children.map(children, (child) => {
-            if (child.type === SelectItem) {
+            if (child.type?.displayName === "SelectItem") {
               return React.cloneElement(child, { onSelect: handleSelect });
-            }
-            if (child.type === SelectLabel) {
-              return child;
             }
             return child;
           })}
-        </SelectContent>
+        </div>
       )}
     </div>
   );
-};
+});
+Select.displayName = "Select";
 
-export {
-  Select,
-  SelectGroup,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectLabel,
-  SelectItem,
-  SelectSeparator,
-  SelectScrollUpButton,
-  SelectScrollDownButton,
-};
+export { Select, SelectItem };

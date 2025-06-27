@@ -1,11 +1,13 @@
-import { useState, useMemo } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent } from "@/components/ui/card";
+"use client"
+
+import { useState, useMemo, useEffect } from "react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Card, CardContent } from "@/components/ui/card"
 import {
   Select,
   SelectItem,
-} from "@/components/ui/select";
+} from "@/components/ui/select"
 import {
   Search,
   Filter,
@@ -14,95 +16,42 @@ import {
   Star,
   MapPin,
   Eye,
-} from "lucide-react";
+} from "lucide-react"
 
 const Home = () => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("");
-  const [priceRange, setPriceRange] = useState("");
-  const [selectedState, setSelectedState] = useState("");
-  const [sortBy, setSortBy] = useState("relevancia");
-
-  const produtos = [
+  const [searchTerm, setSearchTerm] = useState("")
+  const [selectedCategory, setSelectedCategory] = useState("")
+  const [priceRange, setPriceRange] = useState("")
+  const [selectedState, setSelectedState] = useState("")
+  const [sortBy, setSortBy] = useState("relevancia")
+  const [produtos, setProdutos] = useState([
     {
-      id: 1,
-      nome: "Vaso de Cerâmica Artesanal",
-      preco: 89.9,
+      id: "exemplo",
+      nome: "Produto Artesanal Exemplo",
+      preco: 99.9,
       categoria: "Cerâmica",
-      artesao: "Maria Silva",
-      cidade: "Salvador",
-      estado: "BA",
-      rating: 4.8,
-      reviews: 24,
+      artesao: "Exemplo",
+      cidade: "Exemplo City",
+      estado: "EX",
+      rating: 5,
+      reviews: 1,
       imagem: "/placeholder.svg?height=300&width=300",
       favorito: false,
     },
-    {
-      id: 2,
-      nome: "Mesa de Centro Rústica",
-      preco: 450.0,
-      categoria: "Madeira",
-      artesao: "João Santos",
-      cidade: "Recife",
-      estado: "PE",
-      rating: 4.9,
-      reviews: 18,
-      imagem: "/placeholder.svg?height=300&width=300",
-      favorito: true,
-    },
-    {
-      id: 3,
-      nome: "Bolsa de Couro Artesanal",
-      preco: 120.0,
-      categoria: "Couro",
-      artesao: "Ana Costa",
-      cidade: "Fortaleza",
-      estado: "CE",
-      rating: 4.7,
-      reviews: 31,
-      imagem: "/placeholder.svg?height=300&width=300",
-      favorito: false,
-    },
-    {
-      id: 4,
-      nome: "Colar de Pedras Naturais",
-      preco: 75.0,
-      categoria: "Joias",
-      artesao: "Carlos Lima",
-      cidade: "Belo Horizonte",
-      estado: "MG",
-      rating: 4.6,
-      reviews: 12,
-      imagem: "/placeholder.svg?height=300&width=300",
-      favorito: false,
-    },
-    {
-      id: 5,
-      nome: "Tapete Tear Manual",
-      preco: 200.0,
-      categoria: "Tecido",
-      artesao: "Lucia Ferreira",
-      cidade: "São Paulo",
-      estado: "SP",
-      rating: 4.8,
-      reviews: 27,
-      imagem: "/placeholder.svg?height=300&width=300",
-      favorito: true,
-    },
-    {
-      id: 6,
-      nome: "Luminária de Bambu",
-      preco: 95.0,
-      categoria: "Decoração",
-      artesao: "Pedro Oliveira",
-      cidade: "Curitiba",
-      estado: "PR",
-      rating: 4.5,
-      reviews: 15,
-      imagem: "/placeholder.svg?height=300&width=300",
-      favorito: false,
-    },
-  ];
+  ])
+
+  useEffect(() => {
+    fetch("http://localhost:3000/api/produtos")
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          setProdutos(data)
+        }
+      })
+      .catch((err) => {
+        console.error("Erro ao buscar produtos:", err)
+      })
+  }, [])
 
   const categorias = [
     "Cerâmica",
@@ -113,71 +62,68 @@ const Home = () => {
     "Vidro",
     "Joias",
     "Decoração",
-  ];
-  const estados = ["BA", "PE", "CE", "MG", "SP", "PR", "RJ", "RS"];
+  ]
+  const estados = ["BA", "PE", "CE", "MG", "SP", "PR", "RJ", "RS"]
   const faixasPreco = [
     { label: "Até R$ 50", value: "0-50" },
     { label: "R$ 51 - R$ 100", value: "51-100" },
     { label: "R$ 101 - R$ 200", value: "101-200" },
     { label: "R$ 201 - R$ 500", value: "201-500" },
     { label: "Acima de R$ 500", value: "500+" },
-  ];
+  ]
 
   const produtosFiltrados = useMemo(() => {
     const filtered = produtos.filter((produto) => {
       const matchSearch =
         produto.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        produto.artesao.toLowerCase().includes(searchTerm.toLowerCase());
+        produto.artesao.toLowerCase().includes(searchTerm.toLowerCase())
       const matchCategory =
-        !selectedCategory || produto.categoria === selectedCategory;
-      const matchState = !selectedState || produto.estado === selectedState;
+        !selectedCategory || produto.categoria === selectedCategory
+      const matchState = !selectedState || produto.estado === selectedState
 
-      let matchPrice = true;
+      let matchPrice = true
       if (priceRange) {
         if (priceRange === "500+") {
-          matchPrice = produto.preco >= 500;
+          matchPrice = produto.preco >= 500
         } else {
-          const [min, max] = priceRange.split("-").map(Number);
-          matchPrice = produto.preco >= min && produto.preco <= max;
+          const [min, max] = priceRange.split("-").map(Number)
+          matchPrice = produto.preco >= min && produto.preco <= max
         }
       }
 
-      return matchSearch && matchCategory && matchState && matchPrice;
-    });
+      return matchSearch && matchCategory && matchState && matchPrice
+    })
 
     switch (sortBy) {
       case "preco-menor":
-        filtered.sort((a, b) => a.preco - b.preco);
-        break;
+        filtered.sort((a, b) => a.preco - b.preco)
+        break
       case "preco-maior":
-        filtered.sort((a, b) => b.preco - a.preco);
-        break;
+        filtered.sort((a, b) => b.preco - a.preco)
+        break
       case "rating":
-        filtered.sort((a, b) => b.rating - a.rating);
-        break;
+        filtered.sort((a, b) => b.rating - a.rating)
+        break
       case "nome":
-        filtered.sort((a, b) => a.nome.localeCompare(b.nome));
-        break;
-      default:
-        // Relevância - mantém ordem original
-        break;
+        filtered.sort((a, b) => a.nome.localeCompare(b.nome))
+        break
     }
 
-    return filtered;
-  }, [searchTerm, selectedCategory, priceRange, selectedState, sortBy]);
+    return filtered
+  }, [produtos, searchTerm, selectedCategory, priceRange, selectedState, sortBy])
 
   const limparFiltros = () => {
-    setSearchTerm("");
-    setSelectedCategory("");
-    setPriceRange("");
-    setSelectedState("");
-    setSortBy("relevancia");
-  };
+    setSearchTerm("")
+    setSelectedCategory("")
+    setPriceRange("")
+    setSelectedState("")
+    setSortBy("relevancia")
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-blue-400 to-green-300  text-white py-16">
+      <div className="bg-gradient-to-r from-blue-400 to-green-300 text-white py-16">
         <div className="max-w-7xl mx-auto px-4 text-center">
           <h1 className="text-4xl md:text-6xl font-bold mb-4">
             Descubra o Artesanato Brasileiro
@@ -200,7 +146,7 @@ const Home = () => {
         </div>
       </div>
 
-      {/* Filters */}
+      {/* Filtros */}
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
           <div className="flex flex-wrap items-center gap-4 mb-4">
@@ -321,7 +267,9 @@ const Home = () => {
                 <div className="flex items-center space-x-1 mb-2">
                   <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
                   <span className="text-sm font-medium">{produto.rating}</span>
-                  <span className="text-sm text-gray-500">({produto.reviews})</span>
+                  <span className="text-sm text-gray-500">
+                    ({produto.reviews})
+                  </span>
                 </div>
 
                 <div className="flex items-center text-sm text-gray-600 mb-2">
@@ -331,13 +279,18 @@ const Home = () => {
                   </span>
                 </div>
 
-                <p className="text-sm text-gray-600 mb-3">por {produto.artesao}</p>
+                <p className="text-sm text-gray-600 mb-3">
+                  por {produto.artesao}
+                </p>
 
                 <div className="flex items-center justify-between">
                   <span className="text-2xl font-bold text-green-600">
                     R$ {produto.preco.toFixed(2).replace(".", ",")}
                   </span>
-                  <Button size="sm" className="bg-green-300 hover:bg-green-500">
+                  <Button
+                    size="sm"
+                    className="bg-green-300 hover:bg-green-500"
+                  >
                     <ShoppingCart className="h-4 w-4 mr-1" />
                     Comprar
                   </Button>
@@ -362,7 +315,7 @@ const Home = () => {
         )}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Home;
+export default Home

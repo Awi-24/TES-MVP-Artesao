@@ -4,29 +4,18 @@ import { useState } from "react"
 import { Button } from "../components/ui/button"
 import { Input } from "../components/ui/input"
 import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/card"
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from "@/components/ui/select"
-import { Upload, X, DollarSign, Package, Tag, FileText } from "lucide-react"
+import { Select, SelectItem } from "@/components/ui/select" // Use o Select simplificado que te passei
+import { DollarSign, Package, Tag, FileText } from "lucide-react"
 
 const CadastroProduto = () => {
   const [formData, setFormData] = useState({
+    artesao_id: "id-do-artesao-aqui", // substituir pela lógica real
     nome: "",
     categoria: "",
     preco: "",
     descricao: "",
-    materiais: "",
-    dimensoes: "",
-    peso: "",
-    tempoProducao: "",
-    estoque: "",
+    quantidade: "",
   })
-
-  const [imagens, setImagens] = useState([])
 
   const categorias = [
     "Cerâmica",
@@ -43,11 +32,39 @@ const CadastroProduto = () => {
     "Arte",
   ]
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    console.log("Produto:", formData)
-    console.log("Imagens:", imagens)
-    // Implementar lógica de cadastro do produto aqui
+
+    try {
+      const produtoParaEnviar = {
+        artesao_id: formData.artesao_id,
+        nome: formData.nome,
+        categoria: formData.categoria,
+        preco: Number(formData.preco),
+        descricao: formData.descricao,
+        quantidade: Number(formData.quantidade) || 0,
+      }
+
+      const response = await fetch('/api/produtos', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(produtoParaEnviar),
+      })
+
+      if (!response.ok) {
+        throw new Error('Erro ao cadastrar produto')
+      }
+
+      const data = await response.json()
+      console.log('Produto cadastrado:', data)
+      // Limpar formulário ou redirecionar aqui se quiser
+
+    } catch (error) {
+      console.error(error)
+      // Exibir mensagem para o usuário aqui
+    }
   }
 
   const handleChange = (e) => {
@@ -57,26 +74,11 @@ const CadastroProduto = () => {
     })
   }
 
-  // Para controlar Select customizado
   const handleSelectChange = (value) => {
     setFormData({
       ...formData,
       categoria: value,
     })
-  }
-
-  const handleImageUpload = (e) => {
-    const files = Array.from(e.target.files)
-    const newImages = files.map((file) => ({
-      file,
-      url: URL.createObjectURL(file),
-      id: Math.random().toString(36).substr(2, 9),
-    }))
-    setImagens([...imagens, ...newImages])
-  }
-
-  const removeImage = (id) => {
-    setImagens(imagens.filter((img) => img.id !== id))
   }
 
   return (
@@ -122,24 +124,21 @@ const CadastroProduto = () => {
                     <Select
                       value={formData.categoria}
                       onValueChange={handleSelectChange}
+                      className="w-full pl-10"
+                      placeholder="Selecione a categoria"
                     >
-                      <SelectTrigger className="w-full pl-10">
-                        <SelectValue placeholder="Selecione a categoria" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="">Selecione a categoria</SelectItem>
-                        {categorias.map((categoria) => (
-                          <SelectItem key={categoria} value={categoria}>
-                            {categoria}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
+                      <SelectItem value="">Selecione a categoria</SelectItem>
+                      {categorias.map((categoria) => (
+                        <SelectItem key={categoria} value={categoria}>
+                          {categoria}
+                        </SelectItem>
+                      ))}
                     </Select>
                   </div>
                 </div>
               </div>
 
-              {/* Preço e Estoque */}
+              {/* Preço e Quantidade */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <label htmlFor="preco" className="text-sm font-medium text-gray-700">
@@ -162,15 +161,15 @@ const CadastroProduto = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <label htmlFor="estoque" className="text-sm font-medium text-gray-700">
+                  <label htmlFor="quantidade" className="text-sm font-medium text-gray-700">
                     Quantidade em Estoque
                   </label>
                   <Input
-                    id="estoque"
-                    name="estoque"
+                    id="quantidade"
+                    name="quantidade"
                     type="number"
                     placeholder="Quantidade disponível"
-                    value={formData.estoque}
+                    value={formData.quantidade}
                     onChange={handleChange}
                   />
                 </div>
@@ -194,109 +193,6 @@ const CadastroProduto = () => {
                     required
                   />
                 </div>
-              </div>
-
-              {/* Materiais e Dimensões */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label htmlFor="materiais" className="text-sm font-medium text-gray-700">
-                    Materiais Utilizados
-                  </label>
-                  <Input
-                    id="materiais"
-                    name="materiais"
-                    placeholder="Ex: Madeira de eucalipto, verniz natural"
-                    value={formData.materiais}
-                    onChange={handleChange}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <label htmlFor="dimensoes" className="text-sm font-medium text-gray-700">
-                    Dimensões
-                  </label>
-                  <Input
-                    id="dimensoes"
-                    name="dimensoes"
-                    placeholder="Ex: 30cm x 20cm x 15cm"
-                    value={formData.dimensoes}
-                    onChange={handleChange}
-                  />
-                </div>
-              </div>
-
-              {/* Peso e Tempo de Produção */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label htmlFor="peso" className="text-sm font-medium text-gray-700">
-                    Peso (kg)
-                  </label>
-                  <Input
-                    id="peso"
-                    name="peso"
-                    type="number"
-                    step="0.1"
-                    placeholder="Peso do produto"
-                    value={formData.peso}
-                    onChange={handleChange}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <label htmlFor="tempoProducao" className="text-sm font-medium text-gray-700">
-                    Tempo de Produção
-                  </label>
-                  <Input
-                    id="tempoProducao"
-                    name="tempoProducao"
-                    placeholder="Ex: 5 dias úteis"
-                    value={formData.tempoProducao}
-                    onChange={handleChange}
-                  />
-                </div>
-              </div>
-
-              {/* Upload de Imagens */}
-              <div className="space-y-4">
-                <label className="text-sm font-medium text-gray-700">Imagens do Produto</label>
-
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors">
-                  <input
-                    type="file"
-                    multiple
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                    className="hidden"
-                    id="image-upload"
-                  />
-                  <label htmlFor="image-upload" className="cursor-pointer">
-                    <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                    <p className="text-sm text-gray-600 mb-2">Clique para adicionar imagens ou arraste e solte</p>
-                    <p className="text-xs text-gray-500">PNG, JPG, GIF até 10MB cada</p>
-                  </label>
-                </div>
-
-                {/* Preview das Imagens */}
-                {imagens.length > 0 && (
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {imagens.map((img) => (
-                      <div key={img.id} className="relative group">
-                        <img
-                          src={img.url || "/placeholder.svg"}
-                          alt="Preview"
-                          className="w-full h-24 object-cover rounded-lg border"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => removeImage(img.id)}
-                          className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                        >
-                          <X className="h-4 w-4" />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                )}
               </div>
 
               {/* Botões */}

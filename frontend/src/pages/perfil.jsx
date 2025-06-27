@@ -1,24 +1,50 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/card"
 import { Button } from "../components/ui/button"
+import { toast } from "sonner"
 import { User, Mail, Phone, MapPin, ShoppingBag } from "lucide-react"
 
-const PerfilUsuario = ({ userData, onLogout, onEdit }) => {
-  // userData seria passado pela rota, contexto ou API
-  // para demo, vamos criar um state interno com dados mock (remova depois)
-  const [user] = useState(
-    userData || {
-      nome: "João Silva",
-      email: "joao.silva@email.com",
-      telefone: "(11) 99999-9999",
-      cidade: "São Paulo",
-      estado: "SP",
-      tipoArtesao: "Ceramista",
-      especialidade: "Cerâmica decorativa",
+const PerfilUsuario = ({ onLogout, onEdit }) => {
+  const [user, setUser] = useState(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/api/perfil", {
+          method: "GET",
+          credentials: "include", // se estiver usando cookies
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
+
+        if (!response.ok) {
+          throw new Error("Não foi possível obter os dados do perfil.")
+        }
+
+        const data = await response.json()
+        setUser(data)
+      } catch (error) {
+        toast.error("Erro ao carregar o perfil do usuário.")
+        console.error(error)
+      } finally {
+        setLoading(false)
+      }
     }
-  )
+
+    fetchUser()
+  }, [])
+
+  if (loading) {
+    return <div className="p-6 text-center text-gray-600">Carregando perfil...</div>
+  }
+
+  if (!user) {
+    return <div className="p-6 text-center text-red-600">Perfil não encontrado.</div>
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 p-4 flex justify-center items-start pt-20">
@@ -33,100 +59,20 @@ const PerfilUsuario = ({ userData, onLogout, onEdit }) => {
 
           <CardContent className="space-y-6">
             {/* Nome */}
-            <div>
-              <label className="flex items-center text-gray-700 font-medium mb-1">
-                <User className="mr-2 h-5 w-5 text-gray-500" />
-                Nome Completo
-              </label>
-              <input
-                type="text"
-                value={user.nome}
-                disabled
-                className="w-full rounded-md border border-gray-300 bg-gray-100 px-3 py-2 cursor-not-allowed"
-              />
-            </div>
-
+            <Campo label="Nome Completo" value={user.nome} icon={<User />} />
             {/* Email */}
-            <div>
-              <label className="flex items-center text-gray-700 font-medium mb-1">
-                <Mail className="mr-2 h-5 w-5 text-gray-500" />
-                Email
-              </label>
-              <input
-                type="email"
-                value={user.email}
-                disabled
-                className="w-full rounded-md border border-gray-300 bg-gray-100 px-3 py-2 cursor-not-allowed"
-              />
-            </div>
-
+            <Campo label="Email" value={user.email} icon={<Mail />} />
             {/* Telefone */}
-            <div>
-              <label className="flex items-center text-gray-700 font-medium mb-1">
-                <Phone className="mr-2 h-5 w-5 text-gray-500" />
-                Telefone
-              </label>
-              <input
-                type="text"
-                value={user.telefone || "-"}
-                disabled
-                className="w-full rounded-md border border-gray-300 bg-gray-100 px-3 py-2 cursor-not-allowed"
-              />
-            </div>
-
+            <Campo label="Telefone" value={user.telefone || "-"} icon={<Phone />} />
             {/* Cidade e Estado */}
             <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="flex items-center text-gray-700 font-medium mb-1">
-                  <MapPin className="mr-2 h-5 w-5 text-gray-500" />
-                  Cidade
-                </label>
-                <input
-                  type="text"
-                  value={user.cidade}
-                  disabled
-                  className="w-full rounded-md border border-gray-300 bg-gray-100 px-3 py-2 cursor-not-allowed"
-                />
-              </div>
-
-              <div>
-                <label className="flex items-center text-gray-700 font-medium mb-1">
-                  Estado
-                </label>
-                <input
-                  type="text"
-                  value={user.estado}
-                  disabled
-                  className="w-full rounded-md border border-gray-300 bg-gray-100 px-3 py-2 cursor-not-allowed"
-                />
-              </div>
+              <Campo label="Cidade" value={user.cidade} icon={<MapPin />} />
+              <Campo label="Estado" value={user.estado} />
             </div>
-
             {/* Tipo de Artesão */}
-            <div>
-              <label className="flex items-center text-gray-700 font-medium mb-1">
-                Tipo de Artesão
-              </label>
-              <input
-                type="text"
-                value={user.tipoArtesao}
-                disabled
-                className="w-full rounded-md border border-gray-300 bg-gray-100 px-3 py-2 cursor-not-allowed"
-              />
-            </div>
-
+            <Campo label="Tipo de Artesão" value={user.tipoArtesao} />
             {/* Especialidade */}
-            <div>
-              <label className="flex items-center text-gray-700 font-medium mb-1">
-                Especialidade
-              </label>
-              <input
-                type="text"
-                value={user.especialidade || "-"}
-                disabled
-                className="w-full rounded-md border border-gray-300 bg-gray-100 px-3 py-2 cursor-not-allowed"
-              />
-            </div>
+            <Campo label="Especialidade" value={user.especialidade || "-"} />
 
             {/* Botões */}
             <div className="flex space-x-4 pt-4">
@@ -150,5 +96,20 @@ const PerfilUsuario = ({ userData, onLogout, onEdit }) => {
     </div>
   )
 }
+
+const Campo = ({ label, value, icon }) => (
+  <div>
+    <label className="flex items-center text-gray-700 font-medium mb-1">
+      {icon && <span className="mr-2 h-5 w-5 text-gray-500">{icon}</span>}
+      {label}
+    </label>
+    <input
+      type="text"
+      value={value}
+      disabled
+      className="w-full rounded-md border border-gray-300 bg-gray-100 px-3 py-2 cursor-not-allowed"
+    />
+  </div>
+)
 
 export default PerfilUsuario

@@ -9,8 +9,8 @@ export class ArtesaoController {
 	criar = async (req: Request, res: Response): Promise<void> => {
 		try {
 			console.log(req.body)
-			await this.artesaoUseCase.criar(req.body);
-			res.status(201).json({ message: "Artesão criado com sucesso" });
+			const id = await this.artesaoUseCase.criar(req.body);
+			res.status(201).json({ message: "Artesão criado com sucesso", id: id });
 			} catch (error: any) {
 			res.status(400).json({ error: error.message });
 		}

@@ -3,14 +3,15 @@ import { Artesao } from "../../core/entities/Artesao";
 import { ArtesaoPort } from "../../core/ports/Artesao.Port";
 import db from '../../db/db';
 
-
 export class ArtesaoRepository implements ArtesaoPort {
 
-	async criar(artesao: Omit<Artesao, "id" | "updated_at" | "created_at">): Promise<void> {
+	async criar(artesao: Omit<Artesao, "id" | "updated_at" | "created_at">): Promise<string> {
 		console.log("artesao: ", artesao)
-		await addDoc(collection(db, "Artesao"), {
+		const dataSnapshot = await addDoc(collection(db, "Artesao"), {
 			...artesao
 		})
+
+		return dataSnapshot.id
 	}
 
 	async buscarPorId(id: string): Promise<Artesao | null> {

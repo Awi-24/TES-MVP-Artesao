@@ -1,7 +1,7 @@
 import { Artesao } from "../entities/Artesao";
 
 export interface ArtesaoPort {
-  criar(artesao: Artesao): Promise<void>;
+  criar(artesao: Artesao): Promise<string>;
   buscarPorId(id: string): Promise<Artesao | null>;
   buscarPorEmail(email: string): Promise<Artesao | null>;
   atualizar(id: string, dadosAtualizados: Partial<Artesao>): Promise<void>;

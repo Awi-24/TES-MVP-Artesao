@@ -18,7 +18,9 @@ export class ProdutoImagemUseCase {
 			await this.imagemRepo.criar(imagem);
 			logger.info(`Imagem de Produto criada com sucesso. ID: ${imagem.id}, Produto ID: ${imagem.produto_id}`);
 		} catch (error) {
-			logger.error(`Erro no caso de uso ProdutoImagemUseCase.criar para produto_id ${input.produto_id}: ${error.message}`, { stack: error.stack });
+			if(error instanceof Error){
+				logger.error(`Erro no caso de uso ProdutoImagemUseCase.criar para produto_id ${input.produto_id}: ${error.message}`, { stack: error.stack });
+			}
 			throw error;
 		}
 	}
@@ -30,7 +32,9 @@ export class ProdutoImagemUseCase {
 			logger.info(`Listagem de Imagens de Produto para Produto ID: ${produtoId} concluída. Encontradas ${imagens.length} imagens.`);
 			return imagens;
 		} catch (error) {
-			logger.error(`Erro ao listar Imagens de Produto para Produto ID: ${produtoId}: ${error.message}`, { stack: error.stack });
+			if(error instanceof Error){
+				logger.error(`Erro ao listar Imagens de Produto para Produto ID: ${produtoId}: ${error.message}`, { stack: error.stack });
+			}
 			throw error;
 		}
 	}
@@ -41,7 +45,9 @@ export class ProdutoImagemUseCase {
 			await this.imagemRepo.deletar(id);
 			logger.info(`Imagem de Produto ID: ${id} deletada com sucesso.`);
 		} catch (error) {
-			logger.error(`Erro ao deletar Imagem de Produto ID: ${id}: ${error.message}`, { stack: error.stack });
+			if(error instanceof Error){
+				logger.error(`Erro ao deletar Imagem de Produto ID: ${id}: ${error.message}`, { stack: error.stack });
+			}
 			throw error;
 		}
 	}

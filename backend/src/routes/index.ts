@@ -1,7 +1,7 @@
 import express from "express";
-import artesaoRoutes from "./Artesao.Routes.ts";
-import produtoRoutes from "./Produto.Routes.ts";
-import produtoImagemRoutes from "./ProdutoImagem.Routes.ts";
+import artesaoRoutes from "./Artesao.Routes";
+import produtoRoutes from "./Produto.Routes";
+import produtoImagemRoutes from "./ProdutoImagem.Routes";
 
 const router = express.Router();
 

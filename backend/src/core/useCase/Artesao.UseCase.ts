@@ -5,16 +5,7 @@ import logger from "../../logger";
 export class ArtesaoUseCase {
 	constructor(private readonly artesaoRepo: ArtesaoPort) {}
 
-<<<<<<< HEAD
-	async criar(input: Omit<Artesao, "id" | "updated_at" | "created_at">): Promise<void> {
-		console.log("entrou")
-		const existente = await this.artesaoRepo.buscarPorEmail(input.email);
-		console.log("aqui")
-		if (existente) throw new Error("Email já cadastrado");
-		
-		console.log("input", input)
-=======
-	async criar(input: Omit<Artesao, "id" | "created_at" | "updated_at">): Promise<void> {
+	async criar(input: Omit<Artesao, "id" | "created_at" | "updated_at">): Promise<string> {
 		logger.info(`Iniciando caso de uso ArtesaoUseCase.criar para email: ${input.email}`);
 		try {
 			const existente = await this.artesaoRepo.buscarPorEmail(input.email);
@@ -22,24 +13,24 @@ export class ArtesaoUseCase {
 				logger.warn(`Tentativa de criar Artesao com email já cadastrado: ${input.email}`);
 				throw new Error("Email já cadastrado");
 			}
+			const novo = new Artesao(
+				"",
+				input.nome,
+				input.email,
+				input.telefone,
+				input.logradouro,
+				input.cidade,
+				input.estado,
+				input.cep,
+				input.senha_hash,
+				new Date(),
+				new Date()
+			);
 
->>>>>>> 5a6879b336bfbb9eac1e0e4a54286f31668288a7
-		const novo = new Artesao(
-			"",
-			input.nome,
-			input.email,
-			input.telefone,
-			input.logradouro,
-			input.cidade,
-			input.estado,
-			input.cep,
-			input.senha_hash,
-			new Date(),
-			new Date()
-		);
-
-			await this.artesaoRepo.criar(novo);
+			const retorno = await this.artesaoRepo.criar(novo);
 			logger.info(`Artesao criado com sucesso. ID: ${novo.id}, Email: ${novo.email}`);
+			return retorno 
+			
 		} catch (error) {
 			if (error instanceof Error) {
 				logger.error(`Erro no caso de uso ArtesaoUseCase.criar para email ${input.email}: ${error.message}`, { stack: error.stack });
@@ -47,7 +38,9 @@ export class ArtesaoUseCase {
 				logger.error(`Erro no caso de uso ArtesaoUseCase.criar para email ${input.email}: ${JSON.stringify(error)}`);
 			}
 			throw error;
+
 		}
+
 	}
 
 	async buscarPorId(id: string): Promise<Artesao | null> {

@@ -23,7 +23,9 @@ export class ProdutoUseCase {
 			await this.produtoRepo.criar(produto);
 			logger.info(`Produto criado com sucesso. ID: ${produto.id}, Nome: ${produto.nome}`);
 		} catch (error) {
-			logger.error(`Erro no caso de uso ProdutoUseCase.criar para produto ${input.nome}: ${error.message}`, { stack: error.stack });
+			if(error instanceof Error){
+				logger.error(`Erro no caso de uso ProdutoUseCase.criar para produto ${input.nome}: ${error.message}`, { stack: error.stack });
+			}
 			throw error;
 		}
 	}
@@ -44,7 +46,9 @@ export class ProdutoUseCase {
 			logger.info(`Listagem de Produtos para Artesao ID: ${artesaoId} concluída. Encontrados ${produtos.length} produtos.`);
 			return produtos;
 		} catch (error) {
-			logger.error(`Erro ao listar Produtos para Artesao ID: ${artesaoId}: ${error.message}`, { stack: error.stack });
+			if(error instanceof Error){
+				logger.error(`Erro ao listar Produtos para Artesao ID: ${artesaoId}: ${error.message}`, { stack: error.stack });
+			}
 			throw error;
 		}
 	}
@@ -55,7 +59,9 @@ export class ProdutoUseCase {
 			await this.produtoRepo.atualizar(id, dados);
 			logger.info(`Produto ID: ${id} atualizado com sucesso.`);
 		} catch (error) {
-			logger.error(`Erro ao atualizar Produto ID: ${id}: ${error.message}`, { stack: error.stack });
+			if(error instanceof Error){
+				logger.error(`Erro ao atualizar Produto ID: ${id}: ${error.message}`, { stack: error.stack });
+			}
 			throw error;
 		}
 	}
@@ -66,7 +72,9 @@ export class ProdutoUseCase {
 			await this.produtoRepo.deletar(id);
 			logger.info(`Produto ID: ${id} deletado com sucesso.`);
 		} catch (error) {
-			logger.error(`Erro ao deletar Produto ID: ${id}: ${error.message}`, { stack: error.stack });
+			if(error instanceof Error){
+				logger.error(`Erro ao deletar Produto ID: ${id}: ${error.message}`, { stack: error.stack });
+			}
 			throw error;
 		}
 	}

@@ -20,7 +20,8 @@ const PerfilUsuario = ({ onLogout, onEdit }) => {
       }
 
       try {
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/artesao/${userId}`, {
+        console.log(userId)
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/artesao/id/${userId}`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",

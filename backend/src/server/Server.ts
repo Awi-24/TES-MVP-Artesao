@@ -1,22 +1,14 @@
 import express from "express";
-<<<<<<< HEAD
+
 import routes from "../routes/index"; // Rotas centralizadas
 import dotenv from "dotenv";
 dotenv.config();
 
 import cors from "cors";
 
-=======
-import routes from "../routes/index"; // importa o index.ts de rotas
-<<<<<<< HEAD:src/server/Server.ts
 import logger from "../logger";
-=======
 
-import dotenv from "dotenv";
 dotenv.config();
-
->>>>>>> main:backend/src/server/Server.ts
->>>>>>> 5a6879b336bfbb9eac1e0e4a54286f31668288a7
 const app = express();
 
 // ✅ CORS deve vir antes das rotas e do body parser

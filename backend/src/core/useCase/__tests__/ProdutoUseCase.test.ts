@@ -10,6 +10,7 @@ describe("ProdutoUseCase", () => {
     mockProdutoPort = {
       criar: jest.fn(),
       buscarPorId: jest.fn(),
+      buscarTodos: jest.fn(),
       listarPorArtesao: jest.fn(),
       atualizar: jest.fn(),
       deletar: jest.fn(),

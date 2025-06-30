@@ -13,6 +13,7 @@ describe("ArtesaoUseCase", () => {
     mockArtesaoPort = {
       criar: jest.fn(),
       buscarPorId: jest.fn(),
+      buscarTodos: jest.fn(),
       buscarPorEmail: jest.fn(),
       atualizar: jest.fn(),
       deletar: jest.fn(),

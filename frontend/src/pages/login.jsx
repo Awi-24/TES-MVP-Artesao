@@ -12,10 +12,14 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import { ShoppingBag, Eye, EyeOff, Mail, Lock } from "lucide-react";
+import useSessionState from "../hooks/useSessionState";
 
 const Login = () => {
+
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [, setUser] = useSessionState("User", {auth: false, id: ""})
+
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -35,7 +39,7 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:3000/login", {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/artesao/login/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -46,6 +50,9 @@ const Login = () => {
       if (response.ok) {
         toast.success("Login realizado com sucesso!");
         navigate("/"); // Redireciona para a tela principal
+        
+        setUser({auth: true, id: data.id})
+
       } else {
         toast.error(data.message || "Erro ao fazer login.");
       }

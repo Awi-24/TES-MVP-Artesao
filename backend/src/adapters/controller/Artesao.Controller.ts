@@ -27,11 +27,12 @@ export class ArtesaoController {
 	};
 
 	buscarPorEmail = async (req: Request, res: Response): Promise<void> => {
-		const email = req.params.email;
-		const artesao = await this.artesaoUseCase.buscarPorEmail(email);
+		const body = req.body;
+		console.log(body)
+		const artesao = await this.artesaoUseCase.buscarPorEmail(body);
 		if (!artesao) {
-		res.status(404).json({ message: "Artesão não encontrado" });
-		return;
+			res.status(404).json({ message: "Artesão não encontrado" });
+			return;
 		}
 		res.json(artesao);
 	};

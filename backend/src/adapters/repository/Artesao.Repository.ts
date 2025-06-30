@@ -35,28 +35,34 @@ export class ArtesaoRepository implements ArtesaoPort {
 
 	}
 
-	async buscarPorEmail(email: string): Promise<Artesao | null> {
-		const q = query(collection(db, "Artesao"), where("email", "==", `${email}`))
+	async buscarPorEmail(body: {email: string, password: string}): Promise<Artesao | null> {
+		// console.log("body: ", body)
+		const q = query(collection(db, "Artesao"), where("email", "==", `${body.email}`))
 		const dataSnapshot = await getDocs(q)
+		if(body.password == "" && !dataSnapshot.empty) return null
 
+		// console.log("Aqui")
 		const result = dataSnapshot.docs.map((d) => {
 			const data = d.data()
-			return {
-				id: d.id,
-				nome: data.nome,
-				email: data.email,
-				telefone: data.telefone,
-				logradouro: data.logradouro,
-				cidade: data.cidade,
-				estado: data.estado,
-				cep: data.cep,
-				senha_hash: data.senha_hash,
-				created_at: data.created_at,
-				updated_at: data.updated_at
+			const pass = data.senha_hash
+			if(pass == body.password){
+				return {
+					id: d.id,
+					nome: data.nome,
+					email: data.email,
+					telefone: data.telefone,
+					logradouro: data.logradouro,
+					cidade: data.cidade,
+					estado: data.estado,
+					cep: data.cep,
+					senha_hash: "senha não retornada",
+					created_at: data.created_at,
+					updated_at: data.updated_at
+				}
 			}
 		})
-
-		return result[0]
+		// console.log("result[0]: ",result[0])
+		return result[0] || null
 	}
 
 	async atualizar(id: string, dados: Partial<Artesao>): Promise<void> {

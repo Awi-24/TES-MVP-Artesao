@@ -1,9 +1,19 @@
 import { Request, Response } from "express";
 import { ProdutoUseCase } from "../../core/useCase/Produto.UseCase";
 import { ProdutoRepository } from "../repository/Produto.Repository";
+import { Produto } from "../../core/entities/Produto";
 
 export class ProdutoController {
 	constructor(private readonly produtoUseCase = new ProdutoUseCase(new ProdutoRepository())) {}
+
+	buscarTodos = async (req: Request, res: Response): Promise<void> => {
+		const produtos = await this.produtoUseCase.buscarTodos();
+		if (!produtos) {
+			res.status(404).json({ message: "Produto não encontrado" });
+			return;
+		}
+		res.json(produtos);
+	}
 
 	criar = async (req: Request, res: Response): Promise<void> => {
 		await this.produtoUseCase.criar(req.body);

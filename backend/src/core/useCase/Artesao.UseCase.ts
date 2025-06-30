@@ -8,7 +8,7 @@ export class ArtesaoUseCase {
 	async criar(input: Omit<Artesao, "id" | "created_at" | "updated_at">): Promise<string> {
 		logger.info(`Iniciando caso de uso ArtesaoUseCase.criar para email: ${input.email}`);
 		try {
-			const existente = await this.artesaoRepo.buscarPorEmail(input.email);
+			const existente = await this.artesaoRepo.buscarPorEmail({email: input.email, password: ""});
 			if (existente) {
 				logger.warn(`Tentativa de criar Artesao com email já cadastrado: ${input.email}`);
 				throw new Error("Email já cadastrado");
@@ -52,8 +52,8 @@ export class ArtesaoUseCase {
 		return artesao;
 	}
 
-	async buscarPorEmail(email: string): Promise<Omit<Artesao, "id" | "updated_at" | "created_at"> | null> {
-		return this.artesaoRepo.buscarPorEmail(email);
+	async buscarPorEmail(body: {email: string, password: string}): Promise<Omit<Artesao, "id" | "updated_at" | "created_at"> | null> {
+		return this.artesaoRepo.buscarPorEmail(body);
 	}
 
 	async atualizar(id: string, dados: Partial<Artesao>): Promise<void> {

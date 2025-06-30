@@ -6,13 +6,14 @@ import { Input } from "../components/ui/input"
 import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/card"
 import { Select, SelectItem } from "@/components/ui/select"
 import { DollarSign, Package, Tag, FileText } from "lucide-react"
+import useSessionState from "../hooks/useSessionState"
 
 const CadastroProduto = () => {
   // ** Importante: aqui o artesao_id deve vir do usuário logado, por exemplo do localStorage
-  const artesaoId = localStorage.getItem("userId") || ""
+  const [user, ] = useSessionState("User", {auth: false, id: ""})
 
   const [formData, setFormData] = useState({
-    artesao_id: artesaoId,
+    artesao_id: user.id,
     nome: "",
     categoria: "",
     preco: "",
@@ -99,7 +100,7 @@ const CadastroProduto = () => {
       categoria: value,
     })
   }
-
+  if(!user.auth) return <h1>faça login para cadastrar um produto</h1>
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-100 p-4">
       <div className="max-w-4xl mx-auto">

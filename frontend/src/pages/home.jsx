@@ -15,6 +15,7 @@ import {
   Eye,
 } from "lucide-react"
 
+
 const Home = () => {
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("")
@@ -26,7 +27,7 @@ const Home = () => {
   useEffect(() => {
     const fetchProdutos = async () => {
       try {
-        const res = await fetch("http://localhost:3000/produto")
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/produto`)
         if (!res.ok) throw new Error("Erro ao buscar produtos")
         const data = await res.json()
         // Supondo que data seja array de produtos conforme backend

@@ -30,6 +30,14 @@ export class ProdutoUseCase {
 		}
 	}
 
+	async buscarTodos(): Promise<Produto[] | null> {
+		logger.debug(`Buscando todos os produtos`);
+		const produtos = await this.produtoRepo.buscarTodos();
+		if (!produtos) {
+			logger.warn(`Nenhum produto encontrado`);
+		}
+		return produtos;
+	}
 	async buscarPorId(id: string): Promise<Produto | null> {
 		logger.debug(`Buscando Produto por ID: ${id}`);
 		const produto = await this.produtoRepo.buscarPorId(id);

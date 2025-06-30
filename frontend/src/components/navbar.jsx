@@ -7,11 +7,11 @@ import {
   Menu,
   Home,
   LogIn,
-  UserPlus,
   Plus,
   ChevronDown,
   LogOut,
 } from "lucide-react"
+import useSessionState from "../hooks/useSessionState"
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -19,13 +19,13 @@ const Navbar = () => {
   const location = useLocation()
   const navigate = useNavigate()
   const accountRef = useRef(null)
+  const [userLogin, setUserLogin] = useSessionState("User", {auth: false, id: ""})
 
   const isActive = (path) => location.pathname === path
 
   const navItems = [
     { path: "/", label: "Início", icon: Home },
     { path: "/login", label: "Login", icon: LogIn },
-    // { path: "/cadastro", label: "Cadastro", icon: UserPlus },
     { path: "/cadastro-produto", label: "Cadastrar Produto", icon: Plus },
   ]
 
@@ -44,7 +44,7 @@ const Navbar = () => {
 
   // Exemplo simples de logout
   const handleLogout = () => {
-    setIsAccountOpen(false)
+    setUserLogin({suth: false, id: ""})
     // Aqui você pode limpar tokens, contexto, etc
     navigate("/login")
   }
@@ -62,20 +62,23 @@ const Navbar = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center space-x-1 xl:space-x-2">
-            {navItems.map(({ path, label, icon: Icon }) => (
-              <Link
-                key={path}
-                to={path}
-                className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 hover:scale-105 ${
-                  isActive(path)
-                    ? "text-blue-600 bg-blue-50 shadow-sm"
-                    : "text-gray-700 hover:text-blue-600 hover:bg-gray-100"
-                }`}
-              >
-                <Icon className="h-4 w-4" />
-                <span className="whitespace-nowrap">{label}</span>
-              </Link>
-            ))}
+            {navItems.map(({ path, label, icon: Icon }) => {
+              if(userLogin.auth && label == "Login") return null;
+              return (
+                <Link
+                  key={path}
+                  to={path}
+                  className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 hover:scale-105 ${
+                    isActive(path)
+                      ? "text-blue-600 bg-blue-50 shadow-sm"
+                      : "text-gray-700 hover:text-blue-600 hover:bg-gray-100"
+                  }`}
+                >
+                  <Icon className="h-4 w-4" />
+                  <span className="whitespace-nowrap">{label}</span>
+                </Link>
+              )
+            })}
           </div>
 
           {/* Desktop User Menu */}
@@ -127,19 +130,22 @@ const Navbar = () => {
         {isMenuOpen && (
           <div className="lg:hidden">
             <div className="px-2 pt-2 pb-3 space-y-1 bg-gray-50 rounded-lg mt-2">
-              {navItems.map(({ path, label, icon: Icon }) => (
-                <Link
-                  key={path}
-                  to={path}
-                  className={`flex items-center space-x-3 px-4 py-3 rounded-lg text-base font-medium transition-colors duration-200 ${
-                    isActive(path) ? "text-blue-600 bg-blue-50" : "text-gray-700 hover:text-blue-600 hover:bg-gray-100"
-                  }`}
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  <Icon className="h-5 w-5" />
-                  <span>{label}</span>
-                </Link>
-              ))}
+              {navItems.map(({ path, label, icon: Icon }) => {
+                if(userLogin.auth && label == "Login") return null;
+                return (
+                  <Link
+                    key={path}
+                    to={path}
+                    className={`flex items-center space-x-3 px-4 py-3 rounded-lg text-base font-medium transition-colors duration-200 ${
+                      isActive(path) ? "text-blue-600 bg-blue-50" : "text-gray-700 hover:text-blue-600 hover:bg-gray-100"
+                    }`}
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    <Icon className="h-5 w-5" />
+                    <span>{label}</span>
+                  </Link>
+                )
+              })}
 
               {/* Mobile account dropdown */}
               <div className="pt-2 border-t border-gray-200">

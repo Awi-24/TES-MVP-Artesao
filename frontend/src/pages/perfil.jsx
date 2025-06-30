@@ -5,23 +5,23 @@ import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/card"
 import { Button } from "../components/ui/button"
 import { toast } from "sonner"
 import { User, Mail, Phone, MapPin, ShoppingBag } from "lucide-react"
+import useSessionState from "../hooks/useSessionState"
 
 const PerfilUsuario = ({ onLogout, onEdit }) => {
-  const [user, setUser] = useState(null)
+  const [user, setUser] = useState({})
   const [loading, setLoading] = useState(true)
+  const [userLogin, setUserLogin] = useSessionState("User", {auth: false, id: ""})
 
   useEffect(() => {
     const fetchUser = async () => {
-      const userId = localStorage.getItem("userId")
-      if (!userId) {
+      if (user.id == "") {
         toast.error("Usuário não autenticado.")
         setLoading(false)
         return
       }
 
       try {
-        console.log(userId)
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/artesao/id/${userId}`, {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/artesao/id/${userLogin.id}`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -43,13 +43,13 @@ const PerfilUsuario = ({ onLogout, onEdit }) => {
     }
 
     fetchUser()
-  }, [])
+  }, [setUser, user.id, userLogin.id])
 
   if (loading) {
     return <div className="p-6 text-center text-gray-600">Carregando perfil...</div>
   }
 
-  if (!user) {
+  if (userLogin.id == "") {
     return <div className="p-6 text-center text-red-600">Perfil não encontrado.</div>
   }
 
@@ -82,7 +82,7 @@ const PerfilUsuario = ({ onLogout, onEdit }) => {
               <Button
                 className="flex-1 bg-green-600 hover:bg-green-700"
                 onClick={() => {
-                  localStorage.removeItem("userId")
+                  setUserLogin({auth: false, id: ""})
                   onLogout && onLogout()
                   window.location.href = "/login"
                 }}

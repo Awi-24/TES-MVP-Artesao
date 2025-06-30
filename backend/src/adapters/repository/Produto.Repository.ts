@@ -5,9 +5,11 @@ import { ProdutoPort } from "../../core/ports/Produto.Port";
 import db from "../../db/db";
 
 export class ProdutoRepository implements ProdutoPort {
-	async criar(produto: Omit<Produto, "id">): Promise<void> {
+	async criar(produto: Omit<Produto, "id" | "created_at" | "updated_at">): Promise<void> {
 		await addDoc(collection(db, "Produto"), {
 			...produto,
+			created_at: new Date(),
+			updated_at: new Date()
 		});
 	}
 
@@ -27,6 +29,28 @@ export class ProdutoRepository implements ProdutoPort {
 			created_at: data.created_at,
 			updated_at: data.updated_at
 		};
+	}
+
+	async buscarTodos(): Promise<Produto[] | null> {
+		const dataSnapshot = await getDocs(collection(db, "Produto"));
+		if (dataSnapshot.empty) return null;
+
+		const data = dataSnapshot.docs.map((d) => {
+			const data = d.data()
+			return {
+				id: d.id,
+				artesao_id: data.artesao_id,
+				nome: data.nome,
+				descricao: data.descricao,
+				preco: data.preco,
+				quantidade: data.quantidade,
+				categoria: data.categoria,
+				created_at: data.created_at,
+				updated_at: data.updated_at
+			};
+		})
+
+		return data || null
 	}
 
 	async listarPorArtesao(artesaoId: string): Promise<Produto[]> {

@@ -46,7 +46,7 @@ const CadastroProduto = () => {
 
     try {
       const produtoParaEnviar = {
-        artesao_id: formData.artesao_id,
+        artesao_id: user.id,
         nome: formData.nome,
         categoria: formData.categoria,
         preco: Number(formData.preco),

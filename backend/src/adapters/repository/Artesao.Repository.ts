@@ -14,6 +14,31 @@ export class ArtesaoRepository implements ArtesaoPort {
 		return dataSnapshot.id
 	}
 
+	async buscarTodos(): Promise<Artesao[] | null> {
+		const dataSnapshot = await getDocs(collection(db, "Artesao"));
+		if (dataSnapshot.empty) return null;
+
+		const data = dataSnapshot.docs.map((d) => {
+			const data = d.data()
+			return {
+				id: d.id,
+				nome: data.nome,
+				email: data.email,
+				telefone: data.telefone,
+				logradouro: data.logradouro,
+				cidade: data.cidade,
+				estado: data.estado,
+				cep: data.cep,
+				senha_hash: "senha não retornada",
+				created_at: data.created_at,
+				updated_at: data.updated_at
+			};
+		})
+
+		return data || null
+
+	}
+
 	async buscarPorId(id: string): Promise<Artesao | null> {
 		const dataSnapshot = await getDoc(doc(db, "Artesao", id))
 		if(!dataSnapshot.exists()) return null
@@ -28,7 +53,7 @@ export class ArtesaoRepository implements ArtesaoPort {
 			cidade: data.cidade,
 			estado: data.estado,
 			cep: data.cep,
-			senha_hash: data.senha_hash,
+			senha_hash: "senha não retornada",
 			created_at: data.created_at,
 			updated_at: data.updated_at
 		}

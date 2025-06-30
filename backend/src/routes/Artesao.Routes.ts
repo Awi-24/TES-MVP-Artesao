@@ -8,6 +8,7 @@ const router = express.Router()
 
 // Corrigindo rotas para evitar conflito id/email
 router.post("/", artesaocontroller.criar)
+router.get("/", artesaocontroller.buscarTodos)
 router.get("/id/:id", artesaocontroller.buscarPorId)
 router.post("/login/", artesaocontroller.buscarPorEmail)
 router.put("/:id", artesaocontroller.atualizar)

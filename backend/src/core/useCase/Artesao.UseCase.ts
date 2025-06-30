@@ -43,6 +43,15 @@ export class ArtesaoUseCase {
 
 	}
 
+	async buscarTodos(): Promise<Artesao[] | null> {
+		logger.debug(`Buscando todos os Artesãos`);
+		const artesao = await this.artesaoRepo.buscarTodos();
+		if (!artesao) {
+			logger.warn(`Artesões não encontrados`);
+		}
+		return artesao;
+	}
+
 	async buscarPorId(id: string): Promise<Artesao | null> {
 		logger.debug(`Buscando Artesao por ID: ${id}`);
 		const artesao = await this.artesaoRepo.buscarPorId(id);

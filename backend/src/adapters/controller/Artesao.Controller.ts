@@ -16,6 +16,15 @@ export class ArtesaoController {
 		}
 	};
 
+	buscarTodos = async (req: Request, res: Response): Promise<void> => {
+		const artesao = await this.artesaoUseCase.buscarTodos();
+		if (!artesao) {
+		res.status(404).json({ message: "Artesão não encontrado" });
+		return;
+		}
+		res.json(artesao);
+	}
+
 	buscarPorId = async (req: Request, res: Response): Promise<void> => {
 		const id = req.params.id;
 		const artesao = await this.artesaoUseCase.buscarPorId(id);

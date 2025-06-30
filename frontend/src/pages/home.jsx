@@ -15,7 +15,6 @@ import {
   Eye,
 } from "lucide-react"
 
-
 const Home = () => {
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("")
@@ -23,21 +22,6 @@ const Home = () => {
   const [selectedState, setSelectedState] = useState("")
   const [sortBy, setSortBy] = useState("relevancia")
   const [produtos, setProdutos] = useState([])
-
-  useEffect(() => {
-    const fetchProdutos = async () => {
-      try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/produto`)
-        if (!res.ok) throw new Error("Erro ao buscar produtos")
-        const data = await res.json()
-        // Supondo que data seja array de produtos conforme backend
-        setProdutos(data)
-      } catch (err) {
-        console.error("Erro ao buscar produtos:", err)
-      }
-    }
-    fetchProdutos()
-  }, [])
 
   const categorias = [
     "Cerâmica",
@@ -60,14 +44,50 @@ const Home = () => {
     { label: "Acima de R$ 500", value: "500+" },
   ]
 
+  useEffect(() => {
+    const fetchDados = async () => {
+      try {
+        const resProdutos = await fetch(`${import.meta.env.VITE_API_URL}/produto`)
+        const resArtesaos = await fetch(`${import.meta.env.VITE_API_URL}/artesao/`)
+
+        if (!resProdutos.ok || !resArtesaos.ok) throw new Error("Erro ao buscar dados")
+
+        const produtosData = await resProdutos.json()
+        const artesaoData = await resArtesaos.json()
+
+        console.log("Produtos recebidos:", produtosData)
+        console.log("Artesãos recebidos:", artesaoData)
+
+
+        const produtosComArtesao = produtosData.map(produto => {
+          const artesaoRelacionado = artesaoData.find(a => a.id === produto.artesao_id) || {
+            nome: "Desconhecido",
+            cidade: "Desconhecida",
+            estado: "Desconhecido",
+          }
+
+          return {
+            ...produto,
+            artesao: artesaoRelacionado,
+          }
+        })
+
+        setProdutos(produtosComArtesao)
+      } catch (err) {
+        console.error("Erro ao buscar produtos e artesãos:", err)
+      }
+    }
+
+    fetchDados()
+  }, [])
+
+
   const produtosFiltrados = useMemo(() => {
     const filtered = produtos.filter((produto) => {
-      // Ajustar propriedades conforme sua API
       const nome = produto.nome || ""
-      // Supondo que artesao seja um objeto com nome ou artesao_id
-      const artesaoNome = produto.artesao_nome || produto.artesao?.nome || "Desconhecido"
+      const artesaoNome = produto.artesao?.nome || "Desconhecido"
       const categoria = produto.categoria || ""
-      const estado = produto.estado || ""
+      const estado = produto.artesao?.estado || ""
       const preco = Number(produto.preco) || 0
 
       const matchSearch =
@@ -106,7 +126,7 @@ const Home = () => {
     }
 
     return filtered
-  }, [produtos, searchTerm, selectedCategory, priceRange, selectedState, sortBy])
+  }, [produtos, searchTerm, selectedCategory, selectedState, priceRange, sortBy])
 
   const limparFiltros = () => {
     setSearchTerm("")
@@ -271,12 +291,12 @@ const Home = () => {
                 <div className="flex items-center text-sm text-gray-600 mb-2">
                   <MapPin className="h-4 w-4 mr-1" />
                   <span>
-                    {produto.cidade}, {produto.estado}
+                    {produto.artesao?.cidade}, {produto.artesao?.estado}
                   </span>
                 </div>
 
                 <p className="text-sm text-gray-600 mb-3">
-                  por {produto.artesao_nome || produto.artesao?.nome || "Desconhecido"}
+                  por {produto.artesao?.nome || "Desconhecido"}
                 </p>
 
                 <div className="flex items-center justify-between">

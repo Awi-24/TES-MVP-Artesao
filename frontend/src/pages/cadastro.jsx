@@ -7,10 +7,12 @@ import { Input } from "../components/ui/input"
 import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/card"
 import { Select, SelectItem } from "@/components/ui/select"
 import { ShoppingBag, Eye, EyeOff, Lock } from "lucide-react"
+import useSessionState from "../hooks/useSessionState"
 
 const Cadastro = () => {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [, setUser] = useSessionState("User", {auth: false, id: ""})
   const [formData, setFormData] = useState({
     nome: "",
     email: "",
@@ -59,7 +61,9 @@ const Cadastro = () => {
       const data = await res.json()
       console.log("data:", data)
       alert("Cadastro realizado com sucesso!")
-      localStorage.setItem("userId", data.id) // armazena ID se necessário
+
+      setUser({auth: true, id: data.id})
+      
       window.location.href = "/perfil" // redireciona para tela de perfil
 
     } catch (error) {

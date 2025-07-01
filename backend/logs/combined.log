@@ -1789,3 +1789,8 @@
 {"level":"info","message":"Iniciando caso de uso ProdutoUseCase.criar para produto: Produto 4","timestamp":"2025-06-30 19:46:44"}
 {"level":"info","message":"Produto criado com sucesso. ID: , Nome: Produto 4","timestamp":"2025-06-30 19:46:44"}
 {"level":"info","message":"Servidor rodando na porta 3000","timestamp":"2025-06-30 20:21:17"}
+{"level":"info","message":"Servidor rodando na porta 3000","timestamp":"2025-06-30 20:37:25"}
+{"level":"info","message":"Iniciando caso de uso ArtesaoUseCase.criar para email: sergio@gmail.com","timestamp":"2025-06-30 20:58:00"}
+{"level":"info","message":"Artesao criado com sucesso. ID: , Email: sergio@gmail.com","timestamp":"2025-06-30 20:58:00"}
+{"level":"info","message":"Iniciando caso de uso ProdutoUseCase.criar para produto: Bonecos de Ação","timestamp":"2025-06-30 20:59:20"}
+{"level":"info","message":"Produto criado com sucesso. ID: , Nome: Bonecos de Ação","timestamp":"2025-06-30 20:59:20"}
